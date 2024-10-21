@@ -1,20 +1,32 @@
 package com.example.skycast
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
+
+
+    lateinit var animation: Animation
+    lateinit var txtView: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-    }
+
+        animation = AnimationUtils.loadAnimation(this, R.anim.anima)
+        txtView = findViewById(R.id.txtVieew)
+        txtView.startAnimation(animation)
+        txtView.postOnAnimationDelayed({
+            val outIntent = Intent(this@MainActivity, WeatherActivity::class.java)
+            startActivity(outIntent)
+            finish()
+        }, 3000)
+
+
+   }
+
 }

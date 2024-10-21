@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -37,6 +38,28 @@ android {
 
 dependencies {
 
+    implementation ("org.osmdroid:osmdroid-android:6.1.11")
+    implementation ("org.osmdroid:osmdroid-wms:6.1.11")
+    implementation ("org.osmdroid:osmdroid-geopackage:6.1.11")
+    implementation ("org.osmdroid:osmdroid-mapsforge:6.1.11")
+
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.1")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.8.1")
+    implementation ("com.airbnb.android:lottie:6.1.0")
+    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
+    implementation ("com.airbnb.android:lottie:latest_version")
+    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
+    implementation ("com.airbnb.android:lottie:latest_version")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation(libs.play.services.location)
+    kapt ("androidx.room:room-compiler:2.6.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
