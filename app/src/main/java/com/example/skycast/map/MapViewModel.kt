@@ -37,8 +37,7 @@ class MapViewModel(private val weatherRepository: WeatherRepositoryImpl) : ViewM
                 _weatherForecast.postValue(forecastResponse)
 
             } catch (e: Exception) {
-                // Handle exceptions here (e.g., log the error or notify the user)
-                // Optionally, you can set error messages to LiveData to display in the UI
+
             }
         }
     }
