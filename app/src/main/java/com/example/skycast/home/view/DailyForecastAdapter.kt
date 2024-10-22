@@ -1,12 +1,12 @@
-package com.example.skycast
+package com.example.skycast.home.view
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.skycast.R
 import com.example.skycast.model.DailyWeatherData
-import com.example.skycast.model.HourlyWeatherData
 
 class DailyForecastAdapter(private val dailyForecastList: List<DailyWeatherData>) :
     RecyclerView.Adapter<DailyForecastAdapter.DailyViewHolder>() {

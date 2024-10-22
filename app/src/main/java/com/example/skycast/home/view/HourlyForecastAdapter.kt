@@ -1,14 +1,12 @@
-package com.example.skycast
+package com.example.skycast.home.view
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.skycast.R
 import com.example.skycast.model.HourlyWeatherData
-import com.example.skycast.model.remote.WeatherData
-import java.text.SimpleDateFormat
-import java.util.*
 
 class HourlyForecastAdapter(private val hourlyForecastList: List<HourlyWeatherData>) :
     RecyclerView.Adapter<HourlyForecastAdapter.HourlyViewHolder>() {

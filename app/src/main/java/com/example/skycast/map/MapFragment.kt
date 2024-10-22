@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.example.skycast.location.LocationBottomSheetFragment
+//import com.example.skycast.map.LocationBottomSheetFragment
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.config.Configuration
@@ -16,12 +18,16 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.ScaleBarOverlay
+import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.events.MapEventsReceiver
 
 class MapFragment : Fragment() {
 
     private lateinit var mapView: MapView
     private lateinit var locationMarker: Marker
     private lateinit var locationGetter: LocationGetter
+    private var lastClickedLocation: GeoPoint? = null
+    private var clickedLocationMarker: Marker? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,30 +49,20 @@ class MapFragment : Fragment() {
 
         // Initialize the location marker
         locationMarker = Marker(mapView).apply {
-            icon = resources.getDrawable(R.drawable.add_location, null) // Your custom icon
+            icon = resources.getDrawable(R.drawable.add_location, null)
             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            isDraggable = false // Prevent dragging if you want to keep it fixed
         }
         mapView.overlays.add(locationMarker)
 
         // Check for location permission
         if (locationGetter.hasLocationPermission()) {
-            fetchLocationAndSetMarker() // Set the initial marker location
+            fetchLocationAndSetMarker()
         } else {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
 
-        // Handle map click events
-        mapView.setOnTouchListener { _, event ->
-            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
-                val geoPoint = mapView.projection.fromPixels(event.x.toInt(), event.y.toInt())
-                // Update the marker position
-                updateMarkerPosition(geoPoint)
-                // Zoom in when the user clicks on the map
-                mapView.controller.setZoom(15.0) // Set the zoom level (15.0 is an example)
-            }
-            false
-        }
+        // Set up map click listener
+        setupMapClickListener()
 
         // Add other overlays (e.g., scale bar)
         addOtherOverlays()
@@ -78,21 +74,65 @@ class MapFragment : Fragment() {
         mapView.overlays.add(scaleBarOverlay)
     }
 
+    private fun setupMapClickListener() {
+        val mapEventsReceiver = object : MapEventsReceiver {
+            override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
+                mapView.overlays.remove(locationMarker)
+                if (lastClickedLocation == null || p != lastClickedLocation) {
+                    lastClickedLocation = p
+                    addClickedLocationMarker(p)
+                }
+                val dialog = LocationBottomSheetFragment.newInstance(p.latitude, p.longitude)
+                dialog.show(parentFragmentManager, "weatherDialog")
+
+                return true
+            }
+
+            override fun longPressHelper(p: GeoPoint): Boolean {
+                return false
+            }
+        }
+
+        val mapEventsOverlay = MapEventsOverlay(mapEventsReceiver)
+        mapView.overlays.add(mapEventsOverlay)
+    }
+
+    private fun addClickedLocationMarker(point: GeoPoint) {
+        clickedLocationMarker?.let {
+            mapView.overlays.remove(it)
+        }
+
+        clickedLocationMarker = Marker(mapView).apply {
+            position = point
+            icon = resources.getDrawable(R.drawable.add_location, null)
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        }
+
+        mapView.overlays.add(clickedLocationMarker)
+        mapView.invalidate()
+    }
+
+
+    private fun showLocationBottomSheet(point: GeoPoint) {
+        val locationDetails = "Lat: ${point.latitude}, Lon: ${point.longitude}"
+        // Show the bottom sheet or display location details
+        Toast.makeText(requireContext(), locationDetails, Toast.LENGTH_SHORT).show()
+    }
+
     private fun fetchLocationAndSetMarker() {
         lifecycleScope.launch {
             val location = locationGetter.getLocation()
             location?.let {
-                // Set the marker position to the user's location
                 val userLocation = GeoPoint(it.latitude, it.longitude)
-                updateMarkerPosition(userLocation) // Update the marker
-                mapView.controller.setCenter(userLocation) // Center the map on the user's location
-                mapView.controller.setZoom(15.0) // Set the zoom level for the user's location
+                updateMarkerPosition(userLocation)
+                mapView.controller.setCenter(userLocation)
+                mapView.controller.setZoom(9.0)
+
             } ?: run {
-                // If location retrieval fails, set a default location
-                val defaultLocation = GeoPoint(37.7749, -122.4194) // Example: San Francisco coordinates
+                val defaultLocation = locationGetter.getLocation() as GeoPoint
                 updateMarkerPosition(defaultLocation)
-                mapView.controller.setCenter(defaultLocation) // Center on the default location
-                mapView.controller.setZoom(15.0) // Set the zoom level for the default location
+                mapView.controller.setCenter(defaultLocation)
+                mapView.controller.setZoom(10.0)
                 Toast.makeText(requireContext(), "Unable to fetch location. Default location set.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -100,11 +140,6 @@ class MapFragment : Fragment() {
 
     private fun updateMarkerPosition(geoPoint: IGeoPoint) {
         locationMarker.position = geoPoint as GeoPoint?
-        locationMarker.title = "Location: ${geoPoint.latitude}, ${geoPoint.longitude}"
-        locationMarker.showInfoWindow()
-
-        // Display dimensions as a toast message
-        Toast.makeText(requireContext(), "Coordinates: ${geoPoint.latitude}, ${geoPoint.longitude}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onRequestPermissionsResult(
@@ -125,4 +160,3 @@ class MapFragment : Fragment() {
         mapView.onPause()
     }
 }
-
