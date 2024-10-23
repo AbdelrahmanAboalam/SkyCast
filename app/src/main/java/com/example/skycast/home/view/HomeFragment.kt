@@ -26,7 +26,7 @@ import com.example.skycast.home.viewmodel.HomeViewModelFactory
 import com.example.skycast.model.DailyWeatherData
 import com.example.skycast.model.HourlyWeatherData
 import com.example.skycast.model.WeatherRepositoryImpl
-import com.example.skycast.model.remote.WetherForeCastResponse
+import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import com.example.skycast.network.WeatherRemoteDataSource
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -37,7 +37,6 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.properties.Delegates
 
 class HomeFragment : Fragment() {
 
@@ -187,7 +186,7 @@ class HomeFragment : Fragment() {
             .into(imgWeather)
     }
 
-    private fun updateForecastWeather(forecast: WetherForeCastResponse) {
+    private fun updateForecastWeather(forecast: WeatherForecastResponse) {
         // Update UI components with forecast data
         txtRain.text = "${forecast.list[0].pop?.times(100)}%"
 

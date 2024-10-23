@@ -5,11 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skycast.model.WeatherRepositoryImpl
-import com.example.skycast.model.remote.WetherForeCastResponse
+import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MapViewModel(private val weatherRepository: WeatherRepositoryImpl) : ViewModel() {
 
@@ -17,8 +15,8 @@ class MapViewModel(private val weatherRepository: WeatherRepositoryImpl) : ViewM
     val currentWeather: LiveData<CurrentWetherResponse> get() = _currentWeather
 
 
-    private val _weatherForecast = MutableLiveData<WetherForeCastResponse>()
-    val weatherForecast: LiveData<WetherForeCastResponse> get() = _weatherForecast
+    private val _weatherForecast = MutableLiveData<WeatherForecastResponse>()
+    val weatherForecast: LiveData<WeatherForecastResponse> get() = _weatherForecast
 
     private val _currentLocation = MutableLiveData<Pair<Double, Double>>()
     val currentLocation: LiveData<Pair<Double, Double>> get() = _currentLocation

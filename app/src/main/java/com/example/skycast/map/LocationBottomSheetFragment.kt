@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.skycast.R
 import com.example.skycast.db.WeatherLocalDataSourceImpl
 import com.example.skycast.home.view.HomeFragment
@@ -20,6 +21,7 @@ import com.example.skycast.model.WeatherRepositoryImpl
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import com.example.skycast.network.WeatherRemoteDataSource
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 
 class LocationBottomSheetFragment : BottomSheetDialogFragment() {
 
@@ -63,6 +65,7 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
         val cityTextView: TextView = view.findViewById(R.id.tv_city)
         val cloudTextView: TextView = view.findViewById(R.id.tv_cloud)
         val viewAllButton: Button = view.findViewById(R.id.btn_view_all)
+        val saveWeatherButton: Button = view.findViewById(R.id.btn_save_weather)
 
         sharedWeatherViewModel = ViewModelProvider(requireActivity()).get(SharedWeatherViewModel::class.java)
 
@@ -90,6 +93,28 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
                 addToBackStack(null)
             }
             dismiss()
+        }
+        saveWeatherButton.setOnClickListener {
+            val currentWeather = mapViewModel.currentWeather.value
+            val weatherForecast = mapViewModel.weatherForecast.value
+
+            if (currentWeather != null && weatherForecast != null) {
+                // Use a coroutine to insert weather data
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        // Assuming you have a method in your repository to insert both current and forecast weather
+                        weatherRepository.insertWeather(weatherForecast)
+                        weatherRepository.insertWeather(currentWeather)
+                        // Weather data saved successfully
+                        Toast.makeText(requireContext(), "Weather saved successfully!", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        // Handle the error (e.g., show a message to the user)
+                        Toast.makeText(requireContext(), "Failed to save weather: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } else {
+                Toast.makeText(requireContext(), "Weather data is not available!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

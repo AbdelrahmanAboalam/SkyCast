@@ -4,9 +4,21 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.skycast.db.tables.WeatherTable
-
-@Database(entities = [WeatherTable::class], version = 1)
+import androidx.room.TypeConverters
+import com.example.skycast.db.Converters.CloudsConverter
+import com.example.skycast.db.Converters.WeatherDataConverter
+import com.example.skycast.db.Converters.WeatherConverter
+import com.example.skycast.db.Converters.WeatherListConverter
+import com.example.skycast.db.Converters.WindConverter
+import com.example.skycast.model.remote.WeatherForecastResponse
+import com.example.skycast.model.remote.City
+import com.example.skycast.model.remote.WeatherData
+import com.example.skycast.model.remote.current.CurrentWetherResponse
+@Database(
+    entities = [WeatherForecastResponse::class, CurrentWetherResponse::class],
+    version = 1
+)
+@TypeConverters(WeatherDataConverter::class, WeatherConverter::class,WeatherListConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun weatherDao(): WeatherDao
 

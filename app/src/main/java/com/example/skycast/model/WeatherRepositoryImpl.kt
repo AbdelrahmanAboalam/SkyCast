@@ -1,8 +1,7 @@
 package com.example.skycast.model
 
 import com.example.skycast.db.WeatherLocalDataSource
-import com.example.skycast.db.tables.WeatherTable
-import com.example.skycast.model.remote.WetherForeCastResponse
+import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import com.example.skycast.network.WeatherRemoteDataSource
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +18,7 @@ class WeatherRepositoryImpl(
         lon: Double,
         lang: String,
         units: String
-    ): WetherForeCastResponse = withContext(Dispatchers.IO){
+    ): WeatherForecastResponse = withContext(Dispatchers.IO){
         val response = remoteDataSource.getWeatherForecast(lat, lon, lang, units)
         if (response.isSuccessful){
             response.body() ?: throw Exception("No weather forecast data available")
@@ -43,16 +42,44 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override suspend fun insertWeather(weather: WeatherTable) {
-       return localDataSource.insertWeather(weather)
+    override suspend fun insertWeather(weather: WeatherForecastResponse) {
+
+        return localDataSource.insertWeather(weather)
     }
 
-    override suspend fun getAllWeather(): List<WeatherTable> {
+    override suspend fun insertWeather(current: CurrentWetherResponse) {
+        return localDataSource.insertWeather(current)
+    }
+
+    override suspend fun getAllWeather(): List<WeatherForecastResponse> {
         return localDataSource.getAllWeather()
     }
 
-    override suspend fun getWeatherById(id: Int): WeatherTable {
-       return localDataSource.getWeatherById(id)
+    override suspend fun getWeatherById(id: Int): WeatherForecastResponse? {
+        return localDataSource.getWeatherById(id)
     }
 
+    override suspend fun deleteWeather(weather: WeatherForecastResponse) {
+        localDataSource.deleteWeather(weather)
+    }
+
+    override suspend fun updateWeather(weather: WeatherForecastResponse) {
+        localDataSource.updateWeather(weather)
+    }
+
+    override suspend fun getAllCurrent(): List<CurrentWetherResponse> {
+        return localDataSource.getAllCurrent()
+    }
+
+    override suspend fun getCurrentWeatherById(id: Int): CurrentWetherResponse? {
+        return localDataSource.getCurrentWeatherById(id)
+    }
+
+    override suspend fun deleteCurrentWeather(current: CurrentWetherResponse) {
+        localDataSource.deleteCurrentWeather(current)
+    }
+
+    override suspend fun updateCurrentWeather(current: CurrentWetherResponse) {
+        localDataSource.updateCurrentWeather(current)
+    }
 }

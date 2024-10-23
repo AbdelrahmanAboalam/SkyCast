@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skycast.model.WeatherRepository
-import com.example.skycast.model.remote.WetherForeCastResponse
+import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import kotlinx.coroutines.launch
 
@@ -15,8 +15,8 @@ class HomeViewModel(private val weatherRepository: WeatherRepository) : ViewMode
     private val _currentWeather = MutableLiveData<CurrentWetherResponse>()
     val currentWeather: LiveData<CurrentWetherResponse> get() = _currentWeather
 
-    private val _weatherForecast = MutableLiveData<WetherForeCastResponse>()
-    val weatherForecast: LiveData<WetherForeCastResponse> get() = _weatherForecast
+    private val _weatherForecast = MutableLiveData<WeatherForecastResponse>()
+    val weatherForecast: LiveData<WeatherForecastResponse> get() = _weatherForecast
 
     // Method to fetch weather data for a given latitude and longitude
     fun fetchWeather(latitude: Double, longitude: Double, language: String , units: String ) {

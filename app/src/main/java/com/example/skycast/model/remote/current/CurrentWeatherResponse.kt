@@ -1,41 +1,90 @@
 package com.example.skycast.model.remote.current
 
-import com.example.skycast.model.remote.Clouds
-import com.example.skycast.model.remote.Coord
-import com.example.skycast.model.remote.Weather
-import com.example.skycast.model.remote.Wind
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.skycast.db.Converters.WeatherConverter
+import com.example.skycast.db.Converters.WeatherListConverter
 
-data class CurrentWetherResponse (
-    val base: String,
-    val clouds: Clouds,
-    val cod: Int,
-    val coord: Coord,
-    val dt: Int,
-    val id: Int,
-    val main: Main,
-    val name: String,
-    val sys: Sys,
-    val timezone: Int,
-    val visibility: Int,
-    val weather: List<Weather>,
-    val wind: Wind
+@Entity(tableName = "current_weather_table")
+data class CurrentWetherResponse(
+    @PrimaryKey(autoGenerate = true)
+    val idKey: Int = 0,
+
+    val base: String = "",
+
+    @Embedded
+    val clouds: Clouds = Clouds(),
+
+    val cod: Int = 200,
+
+    @Embedded
+    val coord: Coord = Coord(),
+
+    val dt: Int = 0,
+    @ColumnInfo(name = "current_weather_id")
+    val id: Int = 0,
+
+    @Embedded
+    val main: Main = Main(),
+
+    val name: String = "",
+
+    @Embedded
+    val sys: Sys = Sys(),
+
+    val timezone: Int = 0,
+
+    val visibility: Int = 0,
+
+    @TypeConverters(WeatherListConverter::class)
+    val weather: List<Weather> = emptyList(),  // Changed to val instead of @Embedded
+
+    @Embedded
+    val wind: Wind = Wind()
 )
 
 data class Sys(
-    val country: String,
-    val id: Int,
-    val sunrise: Int,
-    val sunset: Int,
-    val type: Int
+    val country: String = "",
+    @ColumnInfo(name = "sys_id")
+    val id: Int = 0,
+    val sunrise: Int = 0,
+    val sunset: Int = 0,
+    val type: Int = 0
 )
 
 data class Main(
-    val feels_like: Double,
-    val grnd_level: Int,
-    val humidity: Int,
-    val pressure: Int,
-    val sea_level: Int,
-    val temp: Double,
-    val temp_max: Double,
-    val temp_min: Double
+    val feels_like: Double = 0.0,
+    val grnd_level: Int = 0,
+    val humidity: Int = 0,
+    val pressure: Int = 0,
+    val sea_level: Int = 0,
+    val temp: Double = 0.0,
+    val temp_max: Double = 0.0,
+    val temp_min: Double = 0.0
+)
+
+data class Weather(
+    val description: String = "",
+    val icon: String = "",
+    @ColumnInfo(name = "weather_id")
+    val id: Int = 0,
+    val main: String = ""
+)
+
+data class Wind(
+    val deg: Int = 0,
+    val gust: Double = 0.0,
+    val speed: Double = 0.0
+)
+
+data class Clouds(
+    val all: Int = 0
+)
+
+data class Coord(
+    val lat: Double = 0.0,
+    val lon: Double = 0.0
 )
