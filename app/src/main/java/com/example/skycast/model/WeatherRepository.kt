@@ -20,5 +20,4 @@ interface WeatherRepository {
     suspend fun deleteCurrentWeather(current : CurrentWetherResponse)
     suspend fun updateCurrentWeather(current : CurrentWetherResponse)
 
-
 }

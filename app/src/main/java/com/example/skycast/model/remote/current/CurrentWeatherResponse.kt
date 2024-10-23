@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.skycast.db.Converters.WeatherConverter
 import com.example.skycast.db.Converters.WeatherListConverter
+import com.example.skycast.model.remote.WeatherForecastResponse
 
 @Entity(tableName = "current_weather_table")
 data class CurrentWetherResponse(

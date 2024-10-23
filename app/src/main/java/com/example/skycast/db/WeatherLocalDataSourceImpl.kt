@@ -21,7 +21,7 @@ class WeatherLocalDataSourceImpl(private val context: Context): WeatherLocalData
         return weatherDao.getAllWeatherForecasts()
     }
 
-    override suspend fun getWeatherById(id: Int): WeatherForecastResponse? {
+    override suspend fun getWeatherById(id: Int): WeatherForecastResponse {
         return weatherDao.getWeatherForecastById(id)
     }
 
@@ -37,7 +37,7 @@ class WeatherLocalDataSourceImpl(private val context: Context): WeatherLocalData
         return weatherDao.getAllCurrentWeather()
     }
 
-    override suspend fun getCurrentWeatherById(id: Int): CurrentWetherResponse? {
+    override suspend fun getCurrentWeatherById(id: Int): CurrentWetherResponse {
         return weatherDao.getCurrentWeatherById(id)
     }
 

@@ -20,10 +20,10 @@ interface WeatherDao {
 
     // Get a specific WeatherForecastResponse by idKey
     @Query("SELECT * FROM weather_forecast_table WHERE idKey = :idKey")
-    suspend fun getWeatherForecastById(idKey: Int): WeatherForecastResponse?
+    suspend fun getWeatherForecastById(idKey: Int): WeatherForecastResponse
 
     // Update a WeatherForecastResponse record
-    @Update
+    @Update( onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateWeatherForecastResponse(forecastResponse: WeatherForecastResponse)
 
     // Delete a WeatherForecastResponse record
@@ -43,15 +43,11 @@ interface WeatherDao {
     suspend fun getAllCurrentWeather(): List<CurrentWetherResponse>
 
     @Query("SELECT * FROM current_weather_table WHERE idKey = :idKey")
-    suspend fun getCurrentWeatherById(idKey: Int): CurrentWetherResponse?
+    suspend fun getCurrentWeatherById(idKey: Int): CurrentWetherResponse
 
     @Delete
     suspend fun deleteCurrentWeatherResponse(currentWeatherResponse: CurrentWetherResponse)
 
-    @Update
+    @Update( onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateCurrentWeatherResponse(currentWeatherResponse: CurrentWetherResponse)
-
-
-
-
 }
