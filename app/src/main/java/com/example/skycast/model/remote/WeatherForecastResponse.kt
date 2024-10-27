@@ -10,7 +10,7 @@ import com.example.skycast.db.Converters.WeatherConverter
 @Entity(tableName = "weather_forecast_table")
 data class WeatherForecastResponse(
     @PrimaryKey(autoGenerate = true)
-    val idKey: Int = 0,
+    var idKey: Int = 0,
 
     @Embedded
     val city: City,

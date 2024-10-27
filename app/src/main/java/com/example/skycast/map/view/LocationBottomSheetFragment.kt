@@ -1,7 +1,6 @@
-package com.example.skycast.location
+package com.example.skycast.map.view
 
 import SharedWeatherViewModel
-import com.example.skycast.home.viewmodel.HomeViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import com.example.skycast.R
 import com.example.skycast.db.WeatherLocalDataSourceImpl
 import com.example.skycast.home.view.HomeFragment
-import com.example.skycast.map.MapViewModel
-import com.example.skycast.map.MapViewModelFactory
+import com.example.skycast.map.viewmodel.MapViewModel
+import com.example.skycast.map.viewmodel.MapViewModelFactory
 import com.example.skycast.model.WeatherRepositoryImpl
-import com.example.skycast.model.remote.current.CurrentWetherResponse
 import com.example.skycast.network.WeatherRemoteDataSource
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
@@ -52,15 +50,13 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize Weather Repository and MapViewModel
         weatherRepository = WeatherRepositoryImpl(
             WeatherRemoteDataSource(),
             WeatherLocalDataSourceImpl(requireContext())
         )
-        val factory = MapViewModelFactory(weatherRepository)
+        val factory = MapViewModelFactory(weatherRepository, requireContext())
         mapViewModel = ViewModelProvider(this, factory).get(MapViewModel::class.java)
 
-        // UI elements
         val temperatureTextView: TextView = view.findViewById(R.id.tv_temperature)
         val cityTextView: TextView = view.findViewById(R.id.tv_city)
         val cloudTextView: TextView = view.findViewById(R.id.tv_cloud)
@@ -70,7 +66,6 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
         sharedWeatherViewModel = ViewModelProvider(requireActivity()).get(SharedWeatherViewModel::class.java)
 
 
-        // Observe current weather data
         mapViewModel.currentWeather.observe(viewLifecycleOwner) { weather ->
             mapViewModel.weatherForecast.observe(viewLifecycleOwner) { forecast ->
 
@@ -81,13 +76,10 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
             }
         }
 
-        // Fetch the weather when fragment is loaded
-        mapViewModel.setLocation(latitude ?: 0.0, longitude ?: 0.0, "en", "metric")
+        mapViewModel.setLocation(latitude ?: 0.0, longitude ?: 0.0)
 
-        // Handle view all button click
         viewAllButton.setOnClickListener {
             HomeFragment.isCurrentLocation = false
-            // Navigate to HomeFragment directly
             parentFragmentManager.commit {
                 replace(R.id.fragment_container, HomeFragment())
                 addToBackStack(null)
@@ -99,16 +91,12 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
             val weatherForecast = mapViewModel.weatherForecast.value
 
             if (currentWeather != null && weatherForecast != null) {
-                // Use a coroutine to insert weather data
                 viewLifecycleOwner.lifecycleScope.launch {
                     try {
-                        // Assuming you have a method in your repository to insert both current and forecast weather
                         weatherRepository.insertWeather(weatherForecast)
                         weatherRepository.insertWeather(currentWeather)
-                        // Weather data saved successfully
                         Toast.makeText(requireContext(), "Weather saved successfully!", Toast.LENGTH_SHORT).show()
                     } catch (e: Exception) {
-                        // Handle the error (e.g., show a message to the user)
                         Toast.makeText(requireContext(), "Failed to save weather: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }

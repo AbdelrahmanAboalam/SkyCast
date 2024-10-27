@@ -1,4 +1,4 @@
-package com.example.skycast
+package com.example.skycast.map.view
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -9,7 +9,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.skycast.location.LocationBottomSheetFragment
+import com.example.skycast.LocationGetter
+import com.example.skycast.R
 //import com.example.skycast.map.LocationBottomSheetFragment
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
@@ -39,37 +40,30 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize LocationGetter
         locationGetter = LocationGetter(requireContext())
 
-        // Initialize the map view
         mapView = view.findViewById(R.id.map_view)
         Configuration.getInstance().userAgentValue = requireActivity().packageName
         mapView.setMultiTouchControls(true)
 
-        // Initialize the location marker
         locationMarker = Marker(mapView).apply {
             icon = resources.getDrawable(R.drawable.add_location, null)
             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         }
         mapView.overlays.add(locationMarker)
 
-        // Check for location permission
         if (locationGetter.hasLocationPermission()) {
             fetchLocationAndSetMarker()
         } else {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
 
-        // Set up map click listener
         setupMapClickListener()
 
-        // Add other overlays (e.g., scale bar)
         addOtherOverlays()
     }
 
     private fun addOtherOverlays() {
-        // Add a scale bar overlay
         val scaleBarOverlay = ScaleBarOverlay(mapView)
         mapView.overlays.add(scaleBarOverlay)
     }
@@ -115,7 +109,6 @@ class MapFragment : Fragment() {
 
     private fun showLocationBottomSheet(point: GeoPoint) {
         val locationDetails = "Lat: ${point.latitude}, Lon: ${point.longitude}"
-        // Show the bottom sheet or display location details
         Toast.makeText(requireContext(), locationDetails, Toast.LENGTH_SHORT).show()
     }
 

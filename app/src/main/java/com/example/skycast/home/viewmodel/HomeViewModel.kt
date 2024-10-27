@@ -1,5 +1,6 @@
 package com.example.skycast.home.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,32 +8,33 @@ import androidx.lifecycle.viewModelScope
 import com.example.skycast.model.WeatherRepository
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
+import com.example.skycast.setting.SettingsManager
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val weatherRepository: WeatherRepository) : ViewModel() {
+class HomeViewModel(private val weatherRepository: WeatherRepository,context: Context) : ViewModel() {
 
-    // LiveData to hold the current weather and forecast data
     private val _currentWeather = MutableLiveData<CurrentWetherResponse>()
     val currentWeather: LiveData<CurrentWetherResponse> get() = _currentWeather
 
     private val _weatherForecast = MutableLiveData<WeatherForecastResponse>()
     val weatherForecast: LiveData<WeatherForecastResponse> get() = _weatherForecast
 
-    // Method to fetch weather data for a given latitude and longitude
-    fun fetchWeather(latitude: Double, longitude: Double, language: String , units: String ) {
+
+    private val sharedPreferences = SettingsManager(context)
+    private val language: String = sharedPreferences.getLanguage()
+    private val unit: String = sharedPreferences.getUnit()
+
+    fun fetchWeather(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             try {
-                // Fetch current weather
-                val currentWeatherResponse = weatherRepository.getCurrentWeather(latitude, longitude , language , units)
+                val currentWeatherResponse = weatherRepository.getCurrentWeather(latitude, longitude , language , unit)
                 _currentWeather.postValue(currentWeatherResponse)
 
-                // Fetch weather forecast
-                val forecastResponse = weatherRepository.getWeatherForecast(latitude, longitude, language , units)
+                val forecastResponse = weatherRepository.getWeatherForecast(latitude, longitude, language , unit)
                 _weatherForecast.postValue(forecastResponse)
 
             } catch (e: Exception) {
-                // Handle exceptions here (e.g., log the error or notify the user)
-                // Optionally, you can set error messages to LiveData to display in the UI
+
             }
         }
     }

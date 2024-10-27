@@ -15,7 +15,6 @@ class LocationGetter (private val context: Context) {
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
-    // Check if the location permission is granted
     fun hasLocationPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             context,
@@ -23,7 +22,6 @@ class LocationGetter (private val context: Context) {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    // Suspend function to fetch location
     suspend fun getLocation(): Location? {
         if (hasLocationPermission()) {
             return suspendCancellableCoroutine { continuation ->

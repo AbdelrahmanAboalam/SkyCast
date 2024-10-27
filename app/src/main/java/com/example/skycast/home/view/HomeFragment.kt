@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.skycast.LocationGetter
-import com.example.skycast.MapFragment
+import com.example.skycast.map.view.MapFragment
 import com.example.skycast.R
 import com.example.skycast.db.WeatherLocalDataSourceImpl
 import com.example.skycast.home.viewmodel.HomeViewModelFactory
@@ -116,7 +116,7 @@ class HomeFragment : Fragment() {
         weatherRepository = WeatherRepositoryImpl(WeatherRemoteDataSource(), WeatherLocalDataSourceImpl(requireContext()))
 
         // Initialize ViewModel
-        val factory = HomeViewModelFactory(weatherRepository)
+        val factory = HomeViewModelFactory(weatherRepository,requireContext())
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
         // Observe LiveData from ViewModel
@@ -163,15 +163,14 @@ class HomeFragment : Fragment() {
                 locationManager.getLocation() // Call the suspend function
             }
             location ?. let {
-                viewModel.fetchWeather(it.latitude, it.longitude, "en", "metric") // Add language and units
+                viewModel.fetchWeather(it.latitude, it.longitude) // Add language and units
             } ?: run {
-                // Handle location null (e.g., show error message)
+
             }
         }
     }
 
     private fun updateCurrentWeather(current: CurrentWetherResponse) {
-        // Update UI components with current weather data
         txtLocation.text = current.name
         txtStatus.text = current.weather[0].description
         txtDate.text = SimpleDateFormat("EEEE, MMM d", Locale.getDefault()).format(Date())

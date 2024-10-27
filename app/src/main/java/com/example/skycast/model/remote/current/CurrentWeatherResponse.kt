@@ -12,7 +12,7 @@ import com.example.skycast.model.remote.WeatherForecastResponse
 @Entity(tableName = "current_weather_table")
 data class CurrentWetherResponse(
     @PrimaryKey(autoGenerate = true)
-    val idKey: Int = 0,
+    var idKey: Int = 0,
 
     val base: String = "",
 
@@ -41,7 +41,7 @@ data class CurrentWetherResponse(
     val visibility: Int = 0,
 
     @TypeConverters(WeatherListConverter::class)
-    val weather: List<Weather> = emptyList(),  // Changed to val instead of @Embedded
+    val weather: List<Weather> = emptyList(),
 
     @Embedded
     val wind: Wind = Wind()

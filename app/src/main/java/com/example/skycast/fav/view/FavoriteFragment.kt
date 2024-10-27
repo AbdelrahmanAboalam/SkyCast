@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.skycast.map.view.MapFragment
 import com.example.skycast.R
-import com.example.skycast.db.WeatherLocalDataSource
 import com.example.skycast.db.WeatherLocalDataSourceImpl
 import com.example.skycast.fav.viewmodel.FavViewModel
 import com.example.skycast.fav.viewmodel.FavViewModelFactory
@@ -28,6 +29,7 @@ class FavoriteFragment : Fragment() {
     private val remoteDataSource = WeatherRemoteDataSource()
     private lateinit var localDataSource : WeatherLocalDataSourceImpl
     private lateinit var sharedWeatherViewModel: SharedWeatherViewModel
+    private lateinit var buttonPlus: Button
 
 
     override fun onCreateView(
@@ -47,6 +49,14 @@ class FavoriteFragment : Fragment() {
         // Set up RecyclerView
         recyclerView = view.findViewById(R.id.recyclerView)
         setupRecyclerView()
+
+        buttonPlus = view.findViewById(R.id.buttonPlus)
+        buttonPlus.setOnClickListener {
+            parentFragmentManager.commit {
+                replace(R.id.fragment_container, MapFragment())
+                addToBackStack(null)
+            }
+        }
 
         // Set up observers
         setupObservers()

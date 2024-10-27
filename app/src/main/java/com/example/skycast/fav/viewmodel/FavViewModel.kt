@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.skycast.model.WeatherRepository
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
+import com.example.skycast.setting.SettingsManager
 import kotlinx.coroutines.launch
 
 class FavViewModel(private val repository: WeatherRepository, private val context: Context) : ViewModel() {
@@ -28,21 +29,22 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
     private val _currentGetForCastWeather = MutableLiveData<WeatherForecastResponse?>()
     val currentGetForCastWeather: LiveData<WeatherForecastResponse?> get() = _currentGetForCastWeather
 
+    private val sharedPreferences = SettingsManager(context)
+    private val language: String = sharedPreferences.getLanguage() ?: "en"
+    private val unit: String = sharedPreferences.getUnit()
+
 
     fun fetchAllCurrentWeather() {
         viewModelScope.launch {
             if (isNetworkAvailable(context)) {
-                // Fetch weather data from remote source and update local database
-                val remoteWeatherData = repository.getAllCurrent() // Assuming this fetches from remote
+                val remoteWeatherData = repository.getAllCurrent()
 
                 remoteWeatherData?.let {
-                    // Update the local database with the fetched data
                     it.forEach { weather ->
                         fetchAndUpdateWeather(weather)
                     }
                 }
             }
-            // Now fetch from the local database
             _currentWeatherList.value = repository.getAllCurrent()
         }
     }
@@ -56,13 +58,13 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
 
     suspend fun fetchAndUpdateWeather(weatherData: CurrentWetherResponse) {
         if (isNetworkAvailable(context)) {
-            // Fetch the latest current weather data
             val currentWeatherResponse = repository.getCurrentWeather(
                 weatherData.coord.lat,
                 weatherData.coord.lon,
-                "en",
-                "metric"
+                language,
+                unit
             )
+            currentWeatherResponse.idKey= weatherData.idKey
             Log.d("FavViewModel", "Updating current weather: $currentWeatherResponse")
             if (currentWeatherResponse != null) {
                 // Update your local database with the fetched data
@@ -73,9 +75,10 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
             val forecastResponse = repository.getWeatherForecast(
                 weatherData.coord.lat,
                 weatherData.coord.lon,
-                "en",
-                "metric"
+                language,
+                unit
             )
+            forecastResponse.idKey = weatherData.idKey
             if (forecastResponse != null) {
                 // Update local database with forecast data if needed
                 repository.updateWeather(forecastResponse)

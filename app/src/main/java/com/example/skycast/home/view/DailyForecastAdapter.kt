@@ -23,8 +23,8 @@ class DailyForecastAdapter(private val dailyForecastList: List<DailyWeatherData>
 
     override fun onBindViewHolder(holder: DailyViewHolder, position: Int) {
         val dailyWeather = dailyForecastList[position]
-        holder.dateTextView.text = dailyWeather.date // Set the date
-        holder.tempRangeTextView.text = "Max: ${dailyWeather.maxTemp}°C | Min: ${dailyWeather.minTemp}°C" // Set temperature range
+        holder.dateTextView.text = dailyWeather.date
+        holder.tempRangeTextView.text = "Max: ${dailyWeather.maxTemp}°C | Min: ${dailyWeather.minTemp}°C"
     }
 
     override fun getItemCount(): Int {
