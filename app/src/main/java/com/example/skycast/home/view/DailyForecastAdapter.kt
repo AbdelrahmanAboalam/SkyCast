@@ -3,6 +3,7 @@ package com.example.skycast.home.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.skycast.R
@@ -14,6 +15,7 @@ class DailyForecastAdapter(private val dailyForecastList: List<DailyWeatherData>
     class DailyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
         val tempRangeTextView: TextView = itemView.findViewById(R.id.tempRangeTextView)
+        val weatherIcon: ImageView = itemView.findViewById(R.id.weatherIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyViewHolder {
@@ -25,6 +27,7 @@ class DailyForecastAdapter(private val dailyForecastList: List<DailyWeatherData>
         val dailyWeather = dailyForecastList[position]
         holder.dateTextView.text = dailyWeather.date
         holder.tempRangeTextView.text = "Max: ${dailyWeather.maxTemp}°C | Min: ${dailyWeather.minTemp}°C"
+        holder.weatherIcon.setImageResource(getImage(dailyWeather.icon))
     }
 
     override fun getItemCount(): Int {

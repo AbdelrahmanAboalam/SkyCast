@@ -10,7 +10,7 @@ class SettingsManager(context: Context) {
         if (sharedPreferences.getBoolean("first_launch", true)) {
             setLanguage("en")
             setUnit("metric")
-            setNotificationType("default")
+            setNotificationType(false)
             setFirstLaunch(false)
         }
     }
@@ -35,11 +35,11 @@ class SettingsManager(context: Context) {
         return sharedPreferences.getString("unit", "metric") ?: "metric"
     }
 
-    fun setNotificationType(type: String) {
-        sharedPreferences.edit().putString("notification_type", type).apply()
+    fun setNotificationType(type: Boolean) {
+        sharedPreferences.edit().putBoolean("notification_type", type).apply()
     }
 
-    fun getNotificationType(): String {
-        return sharedPreferences.getString("notification_type", "default") ?: "default"
+    fun getNotificationType(): Boolean {
+        return sharedPreferences.getBoolean("notification_type", false) ?: false
     }
 }

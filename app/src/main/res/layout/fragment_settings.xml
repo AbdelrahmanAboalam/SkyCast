@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Language Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Language"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <Switch
+        android:id="@+id/switch_language_arabic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arabic"/>
+
+    <Switch
+        android:id="@+id/switch_language_english"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="English"/>
+
+    <!-- Units Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Units"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <Switch
+        android:id="@+id/switch_unit_metric"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Metric (K/h)"/>
+
+    <Switch
+        android:id="@+id/switch_unit_standard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Standard (M/sec)"/>
+
+    <!-- Notification Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <Switch
+        android:id="@+id/switch_notification_enabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enabled"/>
+
+    <Switch
+        android:id="@+id/switch_notification_disabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disabled"/>
+</LinearLayout>

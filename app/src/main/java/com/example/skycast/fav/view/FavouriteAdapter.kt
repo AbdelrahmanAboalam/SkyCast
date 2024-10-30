@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.skycast.R
+import com.example.skycast.home.view.getImage
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 
@@ -52,8 +53,7 @@ RecyclerView.Adapter<FavouriteAdapter.FavouriteViewHolder>(){
             tempMax.text = currentWeather.main.temp_max.toString()
 
             // Load weather icon using Glide or any image loading library
-            val iconUrl = "https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png"
-            Glide.with(itemView.context).load(iconUrl).into(weatherIcon)
+            weatherIcon.setImageResource(getImage( currentWeather.weather[0].icon))
 
             // Handle favorite button click
             btnFavorite.setOnClickListener {

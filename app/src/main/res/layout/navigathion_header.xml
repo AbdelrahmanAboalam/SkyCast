@@ -4,6 +4,7 @@
     android:gravity="bottom"
     android:padding="16dp"
     android:orientation="horizontal"
+
     android:layout_height="200dp">
 
     <ImageView

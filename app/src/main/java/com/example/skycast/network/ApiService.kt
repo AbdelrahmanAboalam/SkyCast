@@ -25,4 +25,12 @@ interface  ApiService {
         @Query("lang") lang: String,
         @Query("appid") apiKey: String = "cb075589ca8be42176e5cf5162ab2e69"
     ): Response<CurrentWetherResponse>
+
+    @GET("weather")
+    suspend fun getCurrentWeatherByCity(
+        @Query("q") cityName: String,
+        @Query("units") units: String = "metric",
+        @Query("lang") lang: String,
+        @Query("appid") apiKey: String = "cb075589ca8be42176e5cf5162ab2e69"
+    ): Response<CurrentWetherResponse>
 }

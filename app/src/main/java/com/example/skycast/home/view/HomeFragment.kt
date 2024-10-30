@@ -59,6 +59,7 @@ class HomeFragment : Fragment() {
     private lateinit var hourRecyclerView: RecyclerView
     private lateinit var forecastRecyclerView: RecyclerView
     private lateinit var btnAddLocation: ExtendedFloatingActionButton
+    private lateinit var image_location: ImageView
 
     companion object {
         var isCurrentLocation = true
@@ -106,6 +107,7 @@ class HomeFragment : Fragment() {
         hourRecyclerView = view.findViewById(R.id.hour_recycler_view)
         forecastRecyclerView = view.findViewById(R.id.recycler_view)
         btnAddLocation = view.findViewById(R.id.btn_add_location)
+        image_location = view.findViewById(R.id.img_location)
 
         // Setup RecyclerViews
         hourRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -132,12 +134,40 @@ class HomeFragment : Fragment() {
             }
         })
 
+        viewModel.currentWeatherByCity.observe(viewLifecycleOwner, Observer { currentWeather ->
+            currentWeather?.let {
+                updateCurrentWeather(it) // Update the UI with the current weather for the city
+            }
+        })
+
         btnAddLocation.setOnClickListener {
             parentFragmentManager.commit {
                 replace(R.id.fragment_container, MapFragment())
                 addToBackStack(null) // Optional: Add to back stack
             }
         }
+        image_location.setOnClickListener {
+            parentFragmentManager.commit {
+                replace(R.id.fragment_container, MapFragment())
+                addToBackStack(null)
+            }
+        }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    // Fetch weather for the entered city
+                    viewModel.fetchWeatherByCity(it)
+
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Optionally handle text change
+                return true
+            }
+        })
 
         // Check for location permissions and fetch weather
         if (!locationManager.hasLocationPermission()) {
@@ -179,10 +209,9 @@ class HomeFragment : Fragment() {
         txtWind.text = "${current.wind.speed} m/s"
         txtHumidity.text = "${current.main.humidity}%"
 
-        val iconUrl = "https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png"
-        Glide.with(this)
-            .load(iconUrl)
-            .into(imgWeather)
+
+
+        imgWeather.setImageResource(getImage(current.weather[0].icon))
     }
 
     private fun updateForecastWeather(forecast: WeatherForecastResponse) {
@@ -193,7 +222,8 @@ class HomeFragment : Fragment() {
             HourlyWeatherData(
                 time = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(it.dt * 1000L)),
                 temp = it.main.temp.toInt(),
-                description = it.weather.joinToString(", ") { it.description }
+                description = it.weather.joinToString(", ") { it.description },
+                icon = it.weather[0].icon
             )
         }
 
@@ -201,7 +231,8 @@ class HomeFragment : Fragment() {
             DailyWeatherData(
                 date = entry.key ?: "",
                 maxTemp = entry.value.maxOf { it.main.temp_max.toInt() },
-                minTemp = entry.value.minOf { it.main.temp_min.toInt() }
+                minTemp = entry.value.minOf { it.main.temp_min.toInt() },
+                icon = entry.value[0].weather[0].icon
             )
         }
 

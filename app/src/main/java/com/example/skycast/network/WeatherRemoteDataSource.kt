@@ -15,4 +15,8 @@ class WeatherRemoteDataSource {
         return apiService.getCurrentWeather(lat, lon, lang = lang, units = unit)
     }
 
+    suspend fun getCurrentWeatherByCity(cityName: String, lang: String, unit: String): Response<CurrentWetherResponse> {
+        return apiService.getCurrentWeatherByCity(cityName, lang = lang, units = unit)
+    }
+
 }

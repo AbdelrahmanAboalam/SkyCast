@@ -42,6 +42,19 @@ class WeatherRepositoryImpl(
         }
     }
 
+    override suspend fun getCurrentWeatherByCity(
+        cityName: String,
+        lang: String,
+        units: String
+    ): CurrentWetherResponse = withContext(Dispatchers.IO) {
+        val response = remoteDataSource.getCurrentWeatherByCity(cityName, lang, units)
+        if (response.isSuccessful){
+            response.body() ?: throw Exception("No current weather data available")
+        }else{
+            throw Exception("Failed to fetch current weather ${response.message()}")
+        }
+    }
+
     override suspend fun insertWeather(weather: WeatherForecastResponse) {
 
         return localDataSource.insertWeather(weather)

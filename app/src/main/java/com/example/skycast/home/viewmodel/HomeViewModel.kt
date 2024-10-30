@@ -19,6 +19,9 @@ class HomeViewModel(private val weatherRepository: WeatherRepository,context: Co
     private val _weatherForecast = MutableLiveData<WeatherForecastResponse>()
     val weatherForecast: LiveData<WeatherForecastResponse> get() = _weatherForecast
 
+    private val _currentWeatherByCity = MutableLiveData<CurrentWetherResponse>()
+    val currentWeatherByCity: LiveData<CurrentWetherResponse> get() = _currentWeatherByCity
+
 
     private val sharedPreferences = SettingsManager(context)
     private val language: String = sharedPreferences.getLanguage()
@@ -27,10 +30,12 @@ class HomeViewModel(private val weatherRepository: WeatherRepository,context: Co
     fun fetchWeather(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             try {
-                val currentWeatherResponse = weatherRepository.getCurrentWeather(latitude, longitude , language , unit)
+                val currentWeatherResponse =
+                    weatherRepository.getCurrentWeather(latitude, longitude, language, unit)
                 _currentWeather.postValue(currentWeatherResponse)
 
-                val forecastResponse = weatherRepository.getWeatherForecast(latitude, longitude, language , unit)
+                val forecastResponse =
+                    weatherRepository.getWeatherForecast(latitude, longitude, language, unit)
                 _weatherForecast.postValue(forecastResponse)
 
             } catch (e: Exception) {
@@ -38,5 +43,19 @@ class HomeViewModel(private val weatherRepository: WeatherRepository,context: Co
             }
         }
     }
+
+    fun fetchWeatherByCity(cityName: String) {
+        viewModelScope.launch {
+            try {
+                val currentWeatherResponse =
+                    weatherRepository.getCurrentWeatherByCity(cityName, language, unit)
+                fetchWeather(currentWeatherResponse.coord.lat, currentWeatherResponse.coord.lon)
+                _currentWeatherByCity.postValue(currentWeatherResponse)
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
 }
 

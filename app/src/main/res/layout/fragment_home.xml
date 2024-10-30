@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     >
 
 
@@ -42,6 +41,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:id="@+id/img_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -84,6 +84,8 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_gravity="center"
+                    android:background="@drawable/border_image"
+                    android:padding="4dp"
                     android:layout_marginTop="16dp" />
 
                 <TextView
@@ -110,7 +112,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="20dp"
-                    android:background="#FBC7C7"
+                    android:background="#80FFFFFF"
+                    android:gravity="center_vertical"
+
                     android:orientation="vertical"
                     android:padding="10dp">
 
@@ -123,19 +127,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:src="@drawable/ic_launcher_background" />
+                            android:src="@drawable/rainy" />
 
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:src="@drawable/ic_launcher_background" />
+                            android:src="@drawable/wind" />
 
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:src="@drawable/ic_launcher_background" />
+                            android:src="@drawable/humidity" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -221,7 +225,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:text="@string/today"
-                        android:textColor="@color/yellow"
+                        android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_weight="1"
@@ -250,7 +254,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:text="@string/_5_day_forecast"
-                    android:textColor="@color/yellow"
+                    android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:layout_weight="1"

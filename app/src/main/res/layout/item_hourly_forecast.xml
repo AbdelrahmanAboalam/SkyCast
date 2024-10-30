@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="8dp"
-    android:background="#FFFFFF"> <!-- White background -->
+    android:background="#80FFFFFF"
+    android:gravity="center_vertical"> <!-- White background -->
 
+    <!-- ImageView at the top -->
+    <ImageView
+        android:id="@+id/weatherIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="Weather icon"
+ /> <!-- Replace with your image resource -->
+
+    <!-- TextView for Date/Time -->
     <TextView
         android:id="@+id/dateTextView"
         android:layout_width="wrap_content"
@@ -15,6 +26,7 @@
         android:textColor="#000000"
         android:text="Time" /> <!-- Placeholder text for time -->
 
+    <!-- TextView for Temperature -->
     <TextView
         android:id="@+id/tempTextView"
         android:layout_width="wrap_content"
@@ -22,6 +34,7 @@
         android:textColor="#000000"
         android:text="Temperature" /> <!-- Placeholder text for temperature -->
 
+    <!-- TextView for Description -->
     <TextView
         android:id="@+id/descriptionTextView"
         android:layout_width="wrap_content"

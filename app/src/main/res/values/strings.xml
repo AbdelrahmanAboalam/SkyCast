@@ -17,4 +17,21 @@
     <string name="saved_to_bookmark">saved to bookmark</string>
     <string name="remove_from_bookmark">remove from bookmark</string>
     <string name="stop">Stop</string>
+
+    <string-array name="language_options">
+        <item>Arabic</item>
+        <item>English</item>
+    </string-array>
+
+    <string-array name="unit_options">
+        <item>K/h</item>
+        <item>M/sec</item>
+    </string-array>
+
+    <string-array name="notification_options">
+        <item>default</item>
+        <item>silent</item>
+        <item>vibrate</item>
+    </string-array>
 </resources>
+

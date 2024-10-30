@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -18,16 +19,16 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:navigationIcon="@drawable/menu" /> <!-- Ensure you have a menu icon -->
+                android:background="#E8153883"
+                app:navigationIcon="@drawable/menu"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" /> <!-- Ensure you have a menu icon -->
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"/>
+            android:layout_marginTop="?attr/actionBarSize" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- Navigation View for Drawer Menu -->
@@ -36,6 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@drawable/background"
         app:headerLayout="@layout/navigathion_header"
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"

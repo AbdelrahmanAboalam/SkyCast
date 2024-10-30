@@ -8,6 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.skycast.alert.view.AlarmFragment
 import com.example.skycast.fav.view.FavoriteFragment
 import com.example.skycast.home.view.HomeFragment
+import com.example.skycast.setting.SettingsFragment
 import com.example.skycast.setting.SettingsManager
 import com.google.android.material.navigation.NavigationView
 
@@ -25,8 +26,6 @@ class WeatherActivity : AppCompatActivity() {
 
         settingsManager = SettingsManager(this)
         settingsManager.initializeDefaults()
-
-        settingsManager.setLanguage("en")
 
        val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -70,6 +69,7 @@ class WeatherActivity : AppCompatActivity() {
 
                 R.id.nav_settings -> {
                     supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, SettingsFragment())
                         .commit()
                 }
 
