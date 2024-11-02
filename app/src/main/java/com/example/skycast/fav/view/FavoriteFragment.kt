@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +31,7 @@ class FavoriteFragment : Fragment() {
     private val remoteDataSource = WeatherRemoteDataSourceImpl()
     private lateinit var localDataSource: WeatherLocalDataSourceImpl
     private lateinit var sharedWeatherViewModel: SharedWeatherViewModel
-    private lateinit var buttonPlus: Button
+    private lateinit var buttonPlus: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

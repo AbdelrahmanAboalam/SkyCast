@@ -5,6 +5,7 @@ import com.example.skycast.home.viewmodel.HomeViewModel
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +54,8 @@ class HomeFragment : Fragment() {
     private lateinit var txtDate: TextView
     private lateinit var imgWeather: ImageView
     private lateinit var txtTemp: TextView
-    private lateinit var txtTempRange: TextView
+    private lateinit var txtMin: TextView
+    private lateinit var txtMax: TextView
     private lateinit var txtRain: TextView
     private lateinit var txtWind: TextView
     private lateinit var txtHumidity: TextView
@@ -106,7 +108,8 @@ class HomeFragment : Fragment() {
         txtDate = view.findViewById(R.id.txt_date)
         imgWeather = view.findViewById(R.id.img_weather)
         txtTemp = view.findViewById(R.id.txt_temp)
-        txtTempRange = view.findViewById(R.id.txt_temp_range)
+        txtMin = view.findViewById(R.id.txt_min)
+        txtMax = view.findViewById(R.id.txt_max)
         txtRain = view.findViewById(R.id.txt_rain)
         txtWind = view.findViewById(R.id.txt_wind)
         txtHumidity = view.findViewById(R.id.txt_humidity)
@@ -218,38 +221,41 @@ class HomeFragment : Fragment() {
         if(settingsManager.getUnit() == "metric") {
             txtTemp.text = "${current.main.temp.toInt()}°C"
             if (settingsManager.getLanguage() == "en") {
-//                txtTempRange.text =
-//                    "Max: ${current.main.temp_max.toInt()}°C | Min: ${current.main.temp_min.toInt()}°C"
-                txtWind.text = "${current.wind.speed} m/s"
+
+                txtMin.text = "${current.main.temp_min.toInt()}°C"
+                txtMax.text = "${current.main.temp_max.toInt()}°C"
+                val speedInKmh = current.wind.speed * 1.60934
+                txtWind.text = "${speedInKmh.toInt()} k/h"
             } else if (settingsManager.getLanguage() == "ar" && settingsManager.getUnit() == "metric") {
-//                txtTempRange.text =
-//                    " ${current.main.temp_max.toInt()}°C: العظمة |  ${current.main.temp_min.toInt()}°C: الصغرى"
-                txtWind.text = "${current.wind.speed} م/ث"
+
+                txtMin.text = "${current.main.temp_min.toInt()}°C"
+                txtMax.text = "${current.main.temp_max.toInt()}°C"
+
+                val speedInKmh = current.wind.speed * 1.60934
+                txtWind.text = "${speedInKmh.toInt()} ك/س "
             }
         }
              if(settingsManager.getUnit() == "imperial") {
                  txtTemp.text = "${current.main.temp.toInt()}°F"
+                 txtMin.text = "${current.main.temp_min.toInt()}°F"
+                 txtMax.text = "${current.main.temp_max.toInt()}°F"
                  if (settingsManager.getLanguage() == "en") {
-//                     txtTempRange.text =
-//                         "Max: ${current.main.temp_max.toInt()}°F | Min: ${current.main.temp_min.toInt()}°F"
-                     val speedInKmh = current.wind.speed * 1.60934
-                     txtWind.text = "${speedInKmh.toInt()} k/h"
+                     txtWind.text = "${current.wind.speed} m/h"
+
                  } else if (settingsManager.getLanguage() == "ar" && settingsManager.getUnit() == "imperial") {
-//                     txtTempRange.text =
-//                         "${current.main.temp_max.toInt()}°F: العظمة | ${current.main.temp_min.toInt()}°F: الصغرى"
-                     val speedInKmh = current.wind.speed * 1.60934
-                     txtWind.text = "${speedInKmh.toInt()} ك/س "
+
+                     txtWind.text = "${current.wind.speed} م/س "
                  }
              }
         if(settingsManager.getUnit() == "standard") {
             txtTemp.text = "${current.main.temp.toInt()}°K"
+            txtMin.text = "${current.main.temp_min.toInt()}°K"
+            txtMax.text = "${current.main.temp_max.toInt()}°K"
             if (settingsManager.getLanguage() == "en") {
-//                txtTempRange.text =
-//                    "Max: ${current.main.temp_max.toInt()}°K | Min: ${current.main.temp_min.toInt()}°K"
-                txtWind.text = "${current.wind.speed} m/s"}
+                txtWind.text = "${current.wind.speed} m/s"
+
+            }
                 else if (settingsManager.getLanguage() == "ar" && settingsManager.getUnit() == "standard"){
-//                txtTempRange.text =
-//                    "العظمة ${current.main.temp_max.toInt()}°K : الصغرى ${current.main.temp_min.toInt()}°K"
 
                 txtWind.text = "${current.wind.speed} م/ث"
             }
@@ -300,14 +306,19 @@ class HomeFragment : Fragment() {
         // Update UI components with forecast data
         txtRain.text = "${forecast.list[0].pop?.times(100)}%"
 
-        val hourlyData = forecast.list.take(8).map {
-            HourlyWeatherData(
-                time = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(it.dt * 1000L)),
-                temp = it.main.temp.toInt(),
-                description = it.weather.joinToString(", ") { it.description },
-                icon = it.weather[0].icon
-            )
-        }
+        val currentTimeInSeconds = System.currentTimeMillis() / 1000L // Get current time in seconds
+
+        val hourlyData = forecast.list.filter {
+            it.dt > currentTimeInSeconds // Keep only future timestamps
+        }.take(8) // Take only the next 8 hours
+            .map {
+                HourlyWeatherData(
+                    time = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(it.dt * 1000L)),
+                    temp = it.main.temp.toInt(),
+                    description = it.weather.joinToString(", ") { it.description },
+                    icon = it.weather[0].icon
+                )
+            }
 
         val dailyData = forecast.list.drop(8).groupBy { it.dt_txt?.substring(0, 10) }.map { entry ->
             DailyWeatherData(

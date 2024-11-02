@@ -80,16 +80,26 @@ class AlarmFragment : Fragment() {
         val nameEditText = dialogView.findViewById<EditText>(R.id.alarmNamePicker)
         val timePicker = dialogView.findViewById<TimePicker>(R.id.alarmTimePicker)
 
-        timePicker.setIs24HourView(true)
+        // Set TimePicker to 12-hour format
+        timePicker.setIs24HourView(false)
 
         AlertDialog.Builder(requireContext())
             .setTitle("Set Alarm")
             .setView(dialogView)
             .setPositiveButton("Set") { _, _ ->
-                val hour = timePicker.hour
+                var hour = timePicker.hour
                 val minute = timePicker.minute
                 val name = nameEditText.text.toString()
-                val time = String.format("%02d:%02d", hour, minute)
+
+                // Determine AM or PM
+                val amPm = if (hour >= 12) "PM" else "AM"
+                if (hour > 12) {
+                    hour -= 12
+                } else if (hour == 0) {
+                    hour = 12
+                }
+
+                val time = String.format("%02d:%02d %s", hour, minute, amPm)
                 val alarm = Alarm(name, time)
                 viewModel.addAlarm(alarm)
 
@@ -99,7 +109,7 @@ class AlarmFragment : Fragment() {
                     val location = locationGetter.getLocation()
                     if (location != null) {
                         // Schedule the alarm with location data
-                        scheduleAlarm(hour, minute, name, location.latitude, location.longitude)
+                        scheduleAlarm(timePicker.hour, minute, name, location.latitude, location.longitude)
                     } else {
                         Toast.makeText(requireContext(), "Unable to get location. Check permissions.", Toast.LENGTH_SHORT).show()
                     }
@@ -117,10 +127,8 @@ class AlarmFragment : Fragment() {
             putExtra("latitude", latitude)
             putExtra("longitude", longitude)
         }
-        Toast.makeText(requireContext(), "Alarm scheduled for $latitude:$latitude", Toast.LENGTH_SHORT).show()
 
-        // Use a unique request code based on the current time and alarm name
-        val requestCode = name.hashCode() // or use any other unique identifier
+        val requestCode = name.hashCode() // or use any unique identifier
         val pendingIntent = PendingIntent.getBroadcast(
             requireContext(),
             requestCode,
@@ -134,25 +142,18 @@ class AlarmFragment : Fragment() {
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
 
-            // Adjust for next day if the time is in the past
             if (before(Calendar.getInstance())) {
                 add(Calendar.DAY_OF_MONTH, 1)
             }
         }
 
-        try {
-            alarmManager.setExact(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                pendingIntent
-            )
-            Toast.makeText(requireContext(), "Alarm scheduled for $hour:$minute", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Failed to schedule alarm", Toast.LENGTH_SHORT).show()
-            // Log the exception for debugging
-            e.printStackTrace()
-        }
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        Toast.makeText(requireContext(), "Alarm scheduled for $hour:$minute", Toast.LENGTH_SHORT).show()
+
+        // Save PendingIntent for future cancellation
+        viewModel.savePendingIntent(requestCode, pendingIntent)
     }
+
 
 
 

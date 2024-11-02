@@ -2,67 +2,139 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:gravity="center">
 
     <!-- Language Section -->
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Language"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        android:orientation="vertical"
+        android:background="@drawable/rounded_corners_background"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center">
 
-    <Switch
-        android:id="@+id/switch_language_arabic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Arabic"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/language"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
 
-    <Switch
-        android:id="@+id/switch_language_english"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="English"/>
+        <Switch
+            android:id="@+id/switch_language_arabic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/arabic"/>
 
-    <!-- Units Section -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Units"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"/>
+        <Switch
+            android:id="@+id/switch_language_english"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/english"/>
+    </LinearLayout>
 
-    <Switch
-        android:id="@+id/switch_unit_metric"
-        android:layout_width="wrap_content"
+    <!-- Wind Speed Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Metric (K/h)"/>
+        android:orientation="vertical"
+        android:background="@drawable/rounded_corners_background"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center">
 
-    <Switch
-        android:id="@+id/switch_unit_standard"
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wind_speed"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <Switch
+            android:id="@+id/k_m"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/km_per_hour"/>
+
+        <Switch
+            android:id="@+id/m_s"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/m_per_sec"/>
+
+        <Switch
+            android:id="@+id/m_h"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mile_per_hour"/>
+    </LinearLayout>
+
+    <!-- Temperature Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Standard (M/sec)"/>
+        android:orientation="vertical"
+        android:background="@drawable/rounded_corners_background"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/temperature"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <Switch
+            android:id="@+id/C"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/celsius"/>
+
+        <Switch
+            android:id="@+id/K"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/kelvin"/>
+
+        <Switch
+            android:id="@+id/F"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fahrenheit"/>
+    </LinearLayout>
 
     <!-- Notification Section -->
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Notifications"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"/>
+        android:orientation="vertical"
+        android:background="@drawable/rounded_corners_background"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center">
 
-    <Switch
-        android:id="@+id/switch_notification_enabled"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enabled"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notifications"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
 
-    <Switch
-        android:id="@+id/switch_notification_disabled"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Disabled"/>
+        <Switch
+            android:id="@+id/switch_notification_enabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enabled"/>
+
+        <Switch
+            android:id="@+id/switch_notification_disabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/disabled"/>
+    </LinearLayout>
+
 </LinearLayout>

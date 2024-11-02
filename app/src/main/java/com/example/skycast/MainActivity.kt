@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             val outIntent = Intent(this@MainActivity, WeatherActivity::class.java)
             startActivity(outIntent)
             finish()
-        }, 100)
+        }, 3000)
 
 
    }

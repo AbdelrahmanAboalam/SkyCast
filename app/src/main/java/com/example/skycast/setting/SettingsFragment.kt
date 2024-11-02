@@ -11,6 +11,11 @@ import com.example.skycast.R
 class SettingsFragment : Fragment() {
 
     private lateinit var settingsManager: SettingsManager
+    private  var onSettingsChangeListener: OnSettingsChangeListener?=null
+
+    fun setOnSettingsChangeListener(listener: OnSettingsChangeListener) {
+        onSettingsChangeListener = listener
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +43,15 @@ class SettingsFragment : Fragment() {
             if (isChecked) {
                 englishSwitch.isChecked = false
                 settingsManager.setLanguage("ar")
+                onSettingsChangeListener?.onLanguageChanged("ar")
+                requireActivity().recreate()
+            }
+            else{
+                englishSwitch.isChecked=true
+                settingsManager.setLanguage("en")
+                onSettingsChangeListener?.onLanguageChanged("en")
+                requireActivity().recreate()
+
             }
         }
 
@@ -45,32 +59,109 @@ class SettingsFragment : Fragment() {
             if (isChecked) {
                 arabicSwitch.isChecked = false
                 settingsManager.setLanguage("en")
+                onSettingsChangeListener?.onLanguageChanged("en")
+                requireActivity().recreate()
+
+            }
+            else{
+                arabicSwitch.isChecked=true
+                settingsManager.setLanguage("ar")
+                onSettingsChangeListener?.onLanguageChanged("ar")
+                requireActivity().recreate()
             }
         }
     }
 
     private fun setupUnitSwitches(view: View) {
-        val metricSwitch: Switch = view.findViewById(R.id.switch_unit_metric)
-        val standardSwitch: Switch = view.findViewById(R.id.switch_unit_standard)
+        val metricSwitch: Switch = view.findViewById(R.id.k_m)
+        val standardSwitch: Switch = view.findViewById(R.id.m_s)
+        val imperialSwitch: Switch = view.findViewById(R.id.m_h)
+        val celsiusSwitch: Switch = view.findViewById(R.id.C)
+        val kelvinSwitch: Switch = view.findViewById(R.id.K)
+        val fahrenheitSwitch: Switch = view.findViewById(R.id.F)
 
         // Set initial states based on saved settings
-        metricSwitch.isChecked = settingsManager.getUnit() == "metric"
-        standardSwitch.isChecked = settingsManager.getUnit() == "standard"
+        updateUnitSwitches(settingsManager.getUnit(), view)
 
         metricSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                standardSwitch.isChecked = false
-                settingsManager.setUnit("metric")
+                updateUnitPreferences("metric", view=view)
             }
         }
 
         standardSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                metricSwitch.isChecked = false
-                settingsManager.setUnit("standard")
+                updateUnitPreferences("standard", view=view)
+            }
+        }
+
+        imperialSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                updateUnitPreferences("imperial", view=view)
+            }
+        }
+
+        celsiusSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                updateUnitPreferences("metric", true, view=view)
+            }
+        }
+
+        kelvinSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                updateUnitPreferences("standard", true, view=view)
+            }
+        }
+
+        fahrenheitSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                updateUnitPreferences("imperial", true, view=view)
             }
         }
     }
+
+    private fun updateUnitPreferences(unit: String, updateUI: Boolean = false, view: View) {
+        when (unit) {
+            "metric" -> {
+                settingsManager.setUnit("metric")
+                // Update the UI state
+                updateUnitSwitches("metric", view=view)
+            }
+            "standard" -> {
+                settingsManager.setUnit("standard")
+                updateUnitSwitches("standard", view=view)
+            }
+            "imperial" -> {
+                settingsManager.setUnit("imperial")
+                updateUnitSwitches("imperial", view=view)
+            }
+        }
+
+        // If updateUI is true, ensure the UI reflects the change
+        if (updateUI) {
+            updateUnitSwitches(unit, view)
+        }
+    }
+
+    private fun updateUnitSwitches(currentUnit: String, view: View) {
+        val metricSwitch: Switch = view.findViewById(R.id.k_m)
+        val standardSwitch: Switch = view.findViewById(R.id.m_s)
+        val imperialSwitch: Switch = view.findViewById(R.id.m_h)
+        val celsiusSwitch: Switch = view.findViewById(R.id.C)
+        val kelvinSwitch: Switch = view.findViewById(R.id.K)
+        val fahrenheitSwitch: Switch = view.findViewById(R.id.F)
+
+        // Reset all switches
+        metricSwitch.isChecked = currentUnit == "metric"
+        standardSwitch.isChecked = currentUnit == "standard"
+        imperialSwitch.isChecked = currentUnit == "imperial"
+
+        // Set specific states for temperature units
+        celsiusSwitch.isChecked = currentUnit == "metric"
+        kelvinSwitch.isChecked = currentUnit == "standard"
+        fahrenheitSwitch.isChecked = currentUnit == "imperial"
+    }
+
 
     private fun setupNotificationSwitches(view: View) {
         val enabledSwitch: Switch = view.findViewById(R.id.switch_notification_enabled)

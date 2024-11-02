@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Padding and margin for full screen layout -->
+    <dimen name="padding_zero">0dp</dimen>
+    <dimen name="margin_zero">0dp</dimen>
+</resources>

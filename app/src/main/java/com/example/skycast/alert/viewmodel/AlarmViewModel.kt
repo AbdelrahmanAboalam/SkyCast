@@ -1,5 +1,6 @@
 package com.example.skycast.alert.viewmodel
 
+import android.app.PendingIntent
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -30,6 +31,13 @@ class AlarmViewModel(
     fun addAlarm(alarm: Alarm) {
         _alarms.value?.add(alarm)
         _alarms.value = _alarms.value
+    }
+
+    val pendingIntentMap = mutableMapOf<Int, PendingIntent>()
+
+    fun savePendingIntent(requestCode: Int, pendingIntent: PendingIntent) {
+        // Save the PendingIntent in the HashMap with the request code as the key
+        pendingIntentMap[requestCode] = pendingIntent
     }
 
     // Function to fetch weather data

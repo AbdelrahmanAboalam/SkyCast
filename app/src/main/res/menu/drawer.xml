@@ -31,14 +31,6 @@ xmlns:tools="http://schemas.android.com/tools"
     android:icon="@drawable/settings"
         android:background="#80FFFF"
         android:title="@string/settings"/>
-
-
-
-
-
-
-
-
 </group>
     <item
 

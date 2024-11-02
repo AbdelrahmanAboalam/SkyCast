@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="100dp"
+    android:layout_height="170dp"
     android:orientation="vertical"
     android:padding="8dp"
-    android:background="#80FFFFFF"
+    android:background="@drawable/rounded_corners_background"
+    android:layout_marginRight="16dp"
     android:gravity="center_vertical"> <!-- White background -->
 
     <!-- ImageView at the top -->
@@ -12,33 +13,38 @@
         android:id="@+id/weatherIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="center"
         android:contentDescription="Weather icon"
- /> <!-- Replace with your image resource -->
+        android:layout_marginBottom="8dp" /> <!-- Add margin here -->
 
     <!-- TextView for Date/Time -->
     <TextView
         android:id="@+id/dateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#000000"
-        android:text="Time" /> <!-- Placeholder text for time -->
+        android:text="Time"
+        android:layout_marginBottom="4dp" /> <!-- Add margin here -->
 
     <!-- TextView for Temperature -->
     <TextView
         android:id="@+id/tempTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textColor="#000000"
-        android:text="Temperature" /> <!-- Placeholder text for temperature -->
+        android:text="Temperature"
+        android:layout_marginBottom="4dp" /> <!-- Add margin here -->
 
     <!-- TextView for Description -->
     <TextView
         android:id="@+id/descriptionTextView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
         android:textColor="#000000"
-        android:text="Description" /> <!-- Placeholder text for description -->
+        android:text="Description" />
 </LinearLayout>

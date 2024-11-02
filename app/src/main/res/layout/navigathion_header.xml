@@ -9,16 +9,18 @@
 
     <ImageView
         android:layout_width="129dp"
-        android:layout_height="176dp"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:src="@drawable/weather" />
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
-        android:text="Your Weather"
-        android:textStyle="bold"
-        android:textSize="26sp"/>
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="SkyCast"
+        android:textSize="26sp"
+        android:textStyle="bold" />
 
 
 </LinearLayout>

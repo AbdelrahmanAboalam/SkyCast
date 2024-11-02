@@ -3,9 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="#80FFFFFF"
+    android:background="@drawable/rounded_corners_background"
     android:gravity="center_vertical"
-    android:padding="15dp"> <!-- Container for image and text -->
+    android:padding="15dp"
+    android:layout_marginBottom="8dp"> <!-- Add bottom margin to create space between items -->
 
     <!-- ImageView on the left side -->
     <ImageView
@@ -30,12 +31,59 @@
             android:textSize="18sp"
             android:textStyle="bold" />  <!-- Placeholder text for date -->
 
-        <TextView
-            android:id="@+id/tempRangeTextView"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Temp Range"
-            android:textColor="#000000" /> <!-- Placeholder text for temperature range -->
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_temp_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/min"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txt_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text=""
+                android:textSize="16sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text=" | "
+                android:textSize="16sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/txt_temp_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/max"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txt_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text=""
+                android:textSize="16sp"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+        <!-- Placeholder text for temperature range -->
 
     </LinearLayout>
 

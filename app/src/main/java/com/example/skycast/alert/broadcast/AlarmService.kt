@@ -1,6 +1,7 @@
 package com.example.skycast.alert.broadcast
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -29,6 +30,8 @@ import kotlinx.coroutines.launch
 class AlarmService : Service() {
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var weatherRepository: WeatherRepository
+    private val pendingIntentMap = mutableMapOf<Int, PendingIntent>()
+
 
     override fun onCreate() {
         super.onCreate()
@@ -43,12 +46,17 @@ class AlarmService : Service() {
         val alarmName = intent?.getStringExtra("alarmName") ?: "Alarm"
         val latitude = intent?.getDoubleExtra("latitude", 0.0) ?: 0.0
         val longitude = intent?.getDoubleExtra("longitude", 0.0) ?: 0.0
-
+        val requestCode = alarmName.hashCode()
         // Play the alarm sound
-        playAlarmSound()
+
+        val sharedPreferences = SettingsManager(applicationContext)
+        val useAlarmSound = sharedPreferences.getNotificationType()
+        if(useAlarmSound) {
+            playAlarmSound()
+        }
 
         if (intent?.action == "DISMISS_ALARM") {
-            dismissAlarm()
+            dismissAlarm(requestCode)
             return START_NOT_STICKY
         }
 
@@ -58,13 +66,32 @@ class AlarmService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun dismissAlarm() {
-        // Cancel the notification
+    private fun dismissAlarm(requestCode: Int) {
         stopAlarmSound()
+
+        // Cancel the alarm
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val pendingIntent = pendingIntentMap[requestCode] ?: PendingIntent.getBroadcast(
+            this,
+            requestCode,
+            Intent(this, AlarmReceiver::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        alarmManager.cancel(pendingIntent)
+
+        // Remove the PendingIntent from the map
+        pendingIntentMap.remove(requestCode)
+
+        // Cancel the notification
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancelAll() // Cancels all notifications for this service
+        notificationManager.cancelAll()
+
         stopSelf()
+        Toast.makeText(this, "Alarm Dismissed", Toast.LENGTH_SHORT).show()
     }
+
+
 
     private fun fetchWeather(latitude: Double, longitude: Double, alarmName: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -116,7 +143,7 @@ class AlarmService : Service() {
 
         // Build and display the notification
         val notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your app icon
+            .setSmallIcon(R.mipmap.ic_launcher) // Replace with your app icon
             .setContentTitle("Alarm Triggered")
             .setContentText("Alarm: $alarmName\nCurrent Temperature: $currentTemp °C")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -166,11 +193,13 @@ class AlarmService : Service() {
     }
 
     private fun stopAlarmSound() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-
-        Toast.makeText(this, "Alarm Dismissed", Toast.LENGTH_SHORT).show()
+        mediaPlayer?.let {
+            if (it.isPlaying) {
+                it.stop()
+            }
+            it.release()
+            mediaPlayer = null
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? {

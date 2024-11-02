@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -44,7 +45,7 @@ RecyclerView.Adapter<FavouriteAdapter.FavouriteViewHolder>(){
         private val tempMin: TextView = itemView.findViewById(R.id.tempMin)
         private val tempMax: TextView = itemView.findViewById(R.id.tempMax)
         private val weatherIcon: ImageView = itemView.findViewById(R.id.weatherIcon)
-        private val btnFavorite: Button = itemView.findViewById(R.id.btnFavorite)
+        private val btnFavorite: ImageButton = itemView.findViewById(R.id.image_button)
         private val imageView: ImageView = itemView.findViewById(R.id.weatherIcon)
 
         fun bind(currentWeather: CurrentWetherResponse) {
