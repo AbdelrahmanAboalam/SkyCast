@@ -17,7 +17,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.skycast.LocationGetter
 import com.example.skycast.map.view.MapFragment
 import com.example.skycast.R
@@ -28,7 +27,8 @@ import com.example.skycast.model.HourlyWeatherData
 import com.example.skycast.model.WeatherRepositoryImpl
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
-import com.example.skycast.network.WeatherRemoteDataSource
+import com.example.skycast.network.WeatherRemoteDataSourceImpl
+import com.example.skycast.setting.SettingsManager
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +44,7 @@ class HomeFragment : Fragment() {
     private lateinit var weatherRepository: WeatherRepositoryImpl
     private lateinit var viewModel: HomeViewModel
     private lateinit var sharedWeatherViewModel: SharedWeatherViewModel
+    private lateinit var settingsManager: SettingsManager
 
     // UI Components
     private lateinit var searchView: SearchView
@@ -60,6 +61,11 @@ class HomeFragment : Fragment() {
     private lateinit var forecastRecyclerView: RecyclerView
     private lateinit var btnAddLocation: ExtendedFloatingActionButton
     private lateinit var image_location: ImageView
+    private lateinit var txt_rain:TextView
+    private lateinit var txt_wind:TextView
+    private lateinit var txt_humidity:TextView
+    private lateinit var txt5DayForecast: TextView
+    private lateinit var txtToday: TextView
 
     companion object {
         var isCurrentLocation = true
@@ -108,6 +114,14 @@ class HomeFragment : Fragment() {
         forecastRecyclerView = view.findViewById(R.id.recycler_view)
         btnAddLocation = view.findViewById(R.id.btn_add_location)
         image_location = view.findViewById(R.id.img_location)
+        txt_rain = view.findViewById(R.id.rain)
+        txt_wind = view.findViewById(R.id.wind)
+        txt_humidity = view.findViewById(R.id.humidity)
+        txt5DayForecast = view.findViewById(R.id.txt_5_day_forecast)
+        txtToday = view.findViewById(R.id.txt_today)
+
+
+        settingsManager = SettingsManager(requireContext())
 
         // Setup RecyclerViews
         hourRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -115,7 +129,7 @@ class HomeFragment : Fragment() {
 
         // Initialize location manager and weather repository
         locationManager = LocationGetter(requireContext())
-        weatherRepository = WeatherRepositoryImpl(WeatherRemoteDataSource(), WeatherLocalDataSourceImpl(requireContext()))
+        weatherRepository = WeatherRepositoryImpl(WeatherRemoteDataSourceImpl(), WeatherLocalDataSourceImpl(requireContext()))
 
         // Initialize ViewModel
         val factory = HomeViewModelFactory(weatherRepository,requireContext())
@@ -201,13 +215,81 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateCurrentWeather(current: CurrentWetherResponse) {
+        if(settingsManager.getUnit() == "metric") {
+            txtTemp.text = "${current.main.temp.toInt()}°C"
+            if (settingsManager.getLanguage() == "en") {
+//                txtTempRange.text =
+//                    "Max: ${current.main.temp_max.toInt()}°C | Min: ${current.main.temp_min.toInt()}°C"
+                txtWind.text = "${current.wind.speed} m/s"
+            } else if (settingsManager.getLanguage() == "ar" && settingsManager.getUnit() == "metric") {
+//                txtTempRange.text =
+//                    " ${current.main.temp_max.toInt()}°C: العظمة |  ${current.main.temp_min.toInt()}°C: الصغرى"
+                txtWind.text = "${current.wind.speed} م/ث"
+            }
+        }
+             if(settingsManager.getUnit() == "imperial") {
+                 txtTemp.text = "${current.main.temp.toInt()}°F"
+                 if (settingsManager.getLanguage() == "en") {
+//                     txtTempRange.text =
+//                         "Max: ${current.main.temp_max.toInt()}°F | Min: ${current.main.temp_min.toInt()}°F"
+                     val speedInKmh = current.wind.speed * 1.60934
+                     txtWind.text = "${speedInKmh.toInt()} k/h"
+                 } else if (settingsManager.getLanguage() == "ar" && settingsManager.getUnit() == "imperial") {
+//                     txtTempRange.text =
+//                         "${current.main.temp_max.toInt()}°F: العظمة | ${current.main.temp_min.toInt()}°F: الصغرى"
+                     val speedInKmh = current.wind.speed * 1.60934
+                     txtWind.text = "${speedInKmh.toInt()} ك/س "
+                 }
+             }
+        if(settingsManager.getUnit() == "standard") {
+            txtTemp.text = "${current.main.temp.toInt()}°K"
+            if (settingsManager.getLanguage() == "en") {
+//                txtTempRange.text =
+//                    "Max: ${current.main.temp_max.toInt()}°K | Min: ${current.main.temp_min.toInt()}°K"
+                txtWind.text = "${current.wind.speed} m/s"}
+                else if (settingsManager.getLanguage() == "ar" && settingsManager.getUnit() == "standard"){
+//                txtTempRange.text =
+//                    "العظمة ${current.main.temp_max.toInt()}°K : الصغرى ${current.main.temp_min.toInt()}°K"
+
+                txtWind.text = "${current.wind.speed} م/ث"
+            }
+        }
+
+
+
+
+
         txtLocation.text = current.name
         txtStatus.text = current.weather[0].description
-        txtDate.text = SimpleDateFormat("EEEE, MMM d", Locale.getDefault()).format(Date())
-        txtTemp.text = "${current.main.temp.toInt()}°C"
-        txtTempRange.text = "Max: ${current.main.temp_max.toInt()}°C | Min: ${current.main.temp_min.toInt()}°C"
-        txtWind.text = "${current.wind.speed} m/s"
+        val locale = if (settingsManager.getLanguage() == "ar") Locale("ar") else Locale.getDefault()
+        val dateFormat = SimpleDateFormat("EEEE, MMM d", locale)
+        txtDate.text = dateFormat.format(Date())
         txtHumidity.text = "${current.main.humidity}%"
+        val layoutParamsToday = txtToday.layoutParams as ViewGroup.MarginLayoutParams
+        val layoutParamsForecast = txt5DayForecast.layoutParams as ViewGroup.MarginLayoutParams
+        if(settingsManager.getLanguage() == "ar"){
+            txt_rain.text = "الأمطار"
+            txt_wind.text = "سرعة الرياح"
+            txt_humidity.text = "الرطوبة"
+            txt5DayForecast.text = "توقعات الأسبوع"
+            txtToday.text = "اليوم"
+
+            layoutParamsToday.marginEnd = 40 // Set right margin
+            txtToday.layoutParams = layoutParamsToday
+            txtToday.textAlignment = View.TEXT_ALIGNMENT_VIEW_END
+
+            // Set right margin and alignment for txt5DayForecast
+            layoutParamsForecast.marginEnd = 40 // Set right margin
+            txt5DayForecast.layoutParams = layoutParamsForecast
+            txt5DayForecast.textAlignment = View.TEXT_ALIGNMENT_VIEW_END
+
+            (txtToday.parent as ViewGroup).layoutDirection = View.LAYOUT_DIRECTION_LTR
+            (txt5DayForecast.parent as ViewGroup).layoutDirection = View.LAYOUT_DIRECTION_RTL
+
+            txtToday.requestLayout()
+            txt5DayForecast.requestLayout()
+
+        }
 
 
 

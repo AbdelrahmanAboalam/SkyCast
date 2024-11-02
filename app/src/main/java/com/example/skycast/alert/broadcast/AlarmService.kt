@@ -19,7 +19,7 @@ import com.example.skycast.R
 import com.example.skycast.model.WeatherRepository
 import com.example.skycast.model.WeatherRepositoryImpl
 import com.example.skycast.model.remote.current.CurrentWetherResponse
-import com.example.skycast.network.WeatherRemoteDataSource
+import com.example.skycast.network.WeatherRemoteDataSourceImpl
 import com.example.skycast.db.WeatherLocalDataSourceImpl
 import com.example.skycast.setting.SettingsManager
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +33,7 @@ class AlarmService : Service() {
     override fun onCreate() {
         super.onCreate()
         weatherRepository = WeatherRepositoryImpl(
-            WeatherRemoteDataSource(),
+            WeatherRemoteDataSourceImpl(),
             WeatherLocalDataSourceImpl(applicationContext)
         )
     }

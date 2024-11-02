@@ -103,6 +103,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textDirection="locale"
                     android:layout_marginTop="8dp"
                     android:textAlignment="center"
                     android:textColor="@color/black"
@@ -155,7 +156,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="20%"
                             android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -188,6 +188,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/rain"
                             android:layout_width="10dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -197,6 +198,7 @@
                             android:textSize="14sp" />
 
                         <TextView
+                            android:id="@+id/wind"
                             android:layout_width="10dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -206,6 +208,7 @@
                             android:textSize="14sp" />
 
                         <TextView
+                            android:id="@+id/humidity"
                             android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -223,6 +226,7 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/txt_today"
                         android:layout_width="wrap_content"
                         android:text="@string/today"
                         android:textColor="@color/black"
@@ -252,6 +256,7 @@
                     app:backgroundTint="@color/soft_purple" />
 
                 <TextView
+                    android:id="@+id/txt_5_day_forecast"
                     android:layout_width="wrap_content"
                     android:text="@string/_5_day_forecast"
                     android:textColor="@color/black"

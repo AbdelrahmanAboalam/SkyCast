@@ -24,9 +24,8 @@ import com.example.skycast.alert.broadcast.AlarmReceiver
 import com.example.skycast.alert.viewmodel.AlarmViewModel
 import com.example.skycast.alert.viewmodel.AlarmViewModelFactory
 import com.example.skycast.db.WeatherLocalDataSourceImpl
-import com.example.skycast.model.WeatherRepository
 import com.example.skycast.model.WeatherRepositoryImpl
-import com.example.skycast.network.WeatherRemoteDataSource
+import com.example.skycast.network.WeatherRemoteDataSourceImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +43,7 @@ class AlarmFragment : Fragment() {
         val btnAddAlarm: Button = view.findViewById(R.id.btnAddAlarm)
 
         // Create the WeatherRepository instance or inject it as needed
-        val weatherRepository = WeatherRepositoryImpl( WeatherRemoteDataSource(),WeatherLocalDataSourceImpl(requireContext()))
+        val weatherRepository = WeatherRepositoryImpl( WeatherRemoteDataSourceImpl(),WeatherLocalDataSourceImpl(requireContext()))
 
         // Create the ViewModelFactory with necessary parameters
         val viewModelFactory = AlarmViewModelFactory(weatherRepository, requireContext())

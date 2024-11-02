@@ -3,21 +3,25 @@ package com.example.skycast.db
 import android.content.Context
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
-class WeatherLocalDataSourceImpl(private val context: Context): WeatherLocalDataSource {
+class WeatherLocalDataSourceImpl(private val context: Context, private val weatherDao: WeatherDao = AppDatabase.getDatabase(context).weatherDao()): WeatherLocalDataSource {
 
-    private val weatherDao = AppDatabase.getDatabase(context).weatherDao()
 
 
     override suspend fun insertWeather(weather: WeatherForecastResponse) {
-        weatherDao.insertWeatherForecastResponse(weather)
+        withContext(Dispatchers.IO) {
+            weatherDao.insertWeatherForecastResponse(weather)
+        }
     }
 
     override suspend fun insertWeather(current: CurrentWetherResponse) {
         weatherDao.insertCurrentWeatherResponse(current)
     }
 
-    override suspend fun getAllWeather(): List<WeatherForecastResponse> {
+    override fun getAllWeather(): Flow<List<WeatherForecastResponse>> {
         return weatherDao.getAllWeatherForecasts()
     }
 
@@ -33,7 +37,7 @@ class WeatherLocalDataSourceImpl(private val context: Context): WeatherLocalData
         weatherDao.updateWeatherForecastResponse(weather)
     }
 
-    override suspend fun getAllCurrent(): List<CurrentWetherResponse> {
+    override  fun getAllCurrent(): Flow<List<CurrentWetherResponse>> {
         return weatherDao.getAllCurrentWeather()
     }
 

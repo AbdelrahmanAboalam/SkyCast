@@ -10,23 +10,27 @@ xmlns:tools="http://schemas.android.com/tools"
     <item
         android:id="@+id/nav_home"
         android:title="@string/home"
+        android:background="#80FFFFFF"
         android:icon="@drawable/home"/>
 
     <item
         android:id="@+id/nav_fav"
         android:title="@string/favorite"
+        android:background="#80FFFFFF"
         android:icon="@drawable/bookmark"/>
 
 
     <item
         android:id="@+id/nav_alram"
         android:title="@string/alram"
+        android:background="#80FFFFFF"
         android:icon="@drawable/alarm"/>
 
     <item
     android:id="@+id/nav_settings"
     android:icon="@drawable/settings"
-    android:title="@string/settings"/>
+        android:background="#80FFFF"
+        android:title="@string/settings"/>
 
 
 

@@ -1,5 +1,6 @@
 package com.example.skycast.home.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -44,13 +45,15 @@ class HomeViewModel(private val weatherRepository: WeatherRepository,context: Co
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     fun fetchWeatherByCity(cityName: String) {
         viewModelScope.launch {
             try {
                 val currentWeatherResponse =
                     weatherRepository.getCurrentWeatherByCity(cityName, language, unit)
+                   _currentWeatherByCity.postValue(currentWeatherResponse)
                 fetchWeather(currentWeatherResponse.coord.lat, currentWeatherResponse.coord.lon)
-                _currentWeatherByCity.postValue(currentWeatherResponse)
+
             } catch (e: Exception) {
 
             }

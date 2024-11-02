@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeatherDao {
@@ -16,7 +17,7 @@ interface WeatherDao {
 
     // Get all WeatherForecastResponse records
     @Query("SELECT * FROM weather_forecast_table")
-    suspend fun getAllWeatherForecasts(): List<WeatherForecastResponse>
+     fun getAllWeatherForecasts(): Flow<List<WeatherForecastResponse>>
 
     // Get a specific WeatherForecastResponse by idKey
     @Query("SELECT * FROM weather_forecast_table WHERE idKey = :idKey")
@@ -40,7 +41,7 @@ interface WeatherDao {
     suspend fun insertCurrentWeatherResponse(currentWeatherResponse: CurrentWetherResponse)
 
     @Query("SELECT * FROM current_weather_table")
-    suspend fun getAllCurrentWeather(): List<CurrentWetherResponse>
+    fun getAllCurrentWeather(): Flow<List<CurrentWetherResponse>>
 
     @Query("SELECT * FROM current_weather_table WHERE idKey = :idKey")
     suspend fun getCurrentWeatherById(idKey: Int): CurrentWetherResponse

@@ -21,7 +21,6 @@ class AlarmReceiver : BroadcastReceiver() {
         startAlarmService(context, alarmName, latitude, longitude)
 
     }
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startAlarmService(context: Context, alarmName: String, latitude: Double, longitude: Double) {
         val serviceIntent = Intent(context, AlarmService::class.java).apply {
@@ -31,6 +30,4 @@ class AlarmReceiver : BroadcastReceiver() {
         }
         context.startService(serviceIntent)
     }
-
-
 }

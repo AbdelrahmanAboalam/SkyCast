@@ -17,7 +17,7 @@ import com.example.skycast.home.view.HomeFragment
 import com.example.skycast.map.viewmodel.MapViewModel
 import com.example.skycast.map.viewmodel.MapViewModelFactory
 import com.example.skycast.model.WeatherRepositoryImpl
-import com.example.skycast.network.WeatherRemoteDataSource
+import com.example.skycast.network.WeatherRemoteDataSourceImpl
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 
@@ -51,7 +51,7 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         weatherRepository = WeatherRepositoryImpl(
-            WeatherRemoteDataSource(),
+            WeatherRemoteDataSourceImpl(),
             WeatherLocalDataSourceImpl(requireContext())
         )
         val factory = MapViewModelFactory(weatherRepository, requireContext())

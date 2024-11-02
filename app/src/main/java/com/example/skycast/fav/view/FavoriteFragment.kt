@@ -9,6 +9,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.skycast.map.view.MapFragment
@@ -18,19 +19,18 @@ import com.example.skycast.fav.viewmodel.FavViewModel
 import com.example.skycast.fav.viewmodel.FavViewModelFactory
 import com.example.skycast.home.view.HomeFragment
 import com.example.skycast.model.WeatherRepositoryImpl
-import com.example.skycast.network.WeatherRemoteDataSource
-
+import com.example.skycast.network.WeatherRemoteDataSourceImpl
+import kotlinx.coroutines.launch
 
 class FavoriteFragment : Fragment() {
 
     private lateinit var viewModel: FavViewModel
     private lateinit var adapter: FavouriteAdapter
     private lateinit var recyclerView: RecyclerView
-    private val remoteDataSource = WeatherRemoteDataSource()
-    private lateinit var localDataSource : WeatherLocalDataSourceImpl
+    private val remoteDataSource = WeatherRemoteDataSourceImpl()
+    private lateinit var localDataSource: WeatherLocalDataSourceImpl
     private lateinit var sharedWeatherViewModel: SharedWeatherViewModel
     private lateinit var buttonPlus: Button
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,12 +41,10 @@ class FavoriteFragment : Fragment() {
         localDataSource = WeatherLocalDataSourceImpl(requireContext())
         sharedWeatherViewModel = ViewModelProvider(requireActivity()).get(SharedWeatherViewModel::class.java)
 
-        // Initialize ViewModel
         val repository = WeatherRepositoryImpl(remoteDataSource, localDataSource)
         val factory = FavViewModelFactory(repository, requireContext())
         viewModel = ViewModelProvider(this, factory).get(FavViewModel::class.java)
 
-        // Set up RecyclerView
         recyclerView = view.findViewById(R.id.recyclerView)
         setupRecyclerView()
 
@@ -58,44 +56,44 @@ class FavoriteFragment : Fragment() {
             }
         }
 
-        // Set up observers
         setupObservers()
 
         return view
     }
 
     private fun setupRecyclerView() {
-        adapter = FavouriteAdapter( { currentWeather ->
-            viewModel.deleteCurrentWeather(currentWeather) // Remove from favorites
-        },
-        onImageClick = { idKey ->
-            viewModel.getCurrentWeatherById(idKey)
-            viewModel.currentGetWeather.observe(viewLifecycleOwner) { currentWeather ->
-                viewModel.currentGetForCastWeather.observe(viewLifecycleOwner) { forecastWeather ->
-                    if (currentWeather != null && forecastWeather != null) {
-                        sharedWeatherViewModel.setWeatherData(currentWeather, forecastWeather)
-                        HomeFragment.isCurrentLocation = false
-                        parentFragmentManager.commit {
-                            replace(R.id.fragment_container, HomeFragment())
-                            addToBackStack(null)
+        adapter = FavouriteAdapter(
+            { currentWeather ->
+                viewModel.deleteCurrentWeather(currentWeather)
+            },
+            onImageClick = { idKey ->
+                viewModel.getCurrentWeatherById(idKey)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewModel.currentGetWeather.collect { currentWeather ->
+                        viewModel.currentGetForCastWeather.collect { forecastWeather ->
+                            if (currentWeather != null && forecastWeather != null) {
+                                sharedWeatherViewModel.setWeatherData(currentWeather, forecastWeather)
+                                HomeFragment.isCurrentLocation = false
+                                parentFragmentManager.commit {
+                                    replace(R.id.fragment_container, HomeFragment())
+                                    addToBackStack(null)
+                                }
+                            }
                         }
-
                     }
                 }
             }
-        }
         )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun setupObservers() {
-        viewModel.currentWeatherList.observe(viewLifecycleOwner) { weatherList ->
-            adapter.setWeatherList(weatherList)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.currentWeatherList.collect { weatherList ->
+                adapter.setWeatherList(weatherList)
+            }
         }
-        // Fetch weather data when fragment is created
         viewModel.fetchAllCurrentWeather()
     }
-
-
 }

@@ -4,19 +4,10 @@ import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import retrofit2.Response
 
-class WeatherRemoteDataSource {
-    private val apiService = RetrofitHelper.getApiService()
+interface WeatherRemoteDataSource {
+    suspend fun getWeatherForecast(lat: Double, lon: Double, lang: String, units: String): Response<WeatherForecastResponse>
+    suspend fun getCurrentWeather(lat: Double, lon: Double, lang: String, units: String): Response<CurrentWetherResponse>
+    suspend fun getCurrentWeatherByCity(cityName: String, lang: String, units: String): Response<CurrentWetherResponse>
 
-    suspend fun getWeatherForecast(lat: Double, lon: Double, lang: String, unit: String): Response<WeatherForecastResponse> {
-        return apiService.getWeatherForecast(lat, lon, lang = lang, units = unit)
-    }
-
-    suspend fun getCurrentWeather(lat: Double, lon: Double, lang: String, unit: String): Response<CurrentWetherResponse> {
-        return apiService.getCurrentWeather(lat, lon, lang = lang, units = unit)
-    }
-
-    suspend fun getCurrentWeatherByCity(cityName: String, lang: String, unit: String): Response<CurrentWetherResponse> {
-        return apiService.getCurrentWeatherByCity(cityName, lang = lang, units = unit)
-    }
 
 }

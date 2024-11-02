@@ -4,11 +4,13 @@ import com.example.skycast.db.WeatherLocalDataSource
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import com.example.skycast.network.WeatherRemoteDataSource
+import com.example.skycast.network.WeatherRemoteDataSourceImpl
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class WeatherRepositoryImpl(
-    private val remoteDataSource: WeatherRemoteDataSource ,
+    private val remoteDataSource: WeatherRemoteDataSource,
     private val localDataSource: WeatherLocalDataSource
 ): WeatherRepository {
 
@@ -23,7 +25,7 @@ class WeatherRepositoryImpl(
         if (response.isSuccessful){
             response.body() ?: throw Exception("No weather forecast data available")
         }else{
-            throw Exception("Failed to fetch weather forecast ${response.message()}")
+            throw Exception("Failed to fetch weather forecast")
         }
 
     }
@@ -64,7 +66,7 @@ class WeatherRepositoryImpl(
         return localDataSource.insertWeather(current)
     }
 
-    override suspend fun getAllWeather(): List<WeatherForecastResponse> {
+    override suspend fun getAllWeather(): Flow<List<WeatherForecastResponse>> {
         return localDataSource.getAllWeather()
     }
 
@@ -80,7 +82,7 @@ class WeatherRepositoryImpl(
         localDataSource.updateWeather(weather)
     }
 
-    override suspend fun getAllCurrent(): List<CurrentWetherResponse> {
+    override suspend fun getAllCurrent(): Flow<List<CurrentWetherResponse>> {
         return localDataSource.getAllCurrent()
     }
 
