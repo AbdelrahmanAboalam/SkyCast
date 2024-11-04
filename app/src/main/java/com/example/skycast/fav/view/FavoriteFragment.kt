@@ -2,10 +2,10 @@ package com.example.skycast.fav.view
 
 import SharedWeatherViewModel
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -21,6 +21,7 @@ import com.example.skycast.fav.viewmodel.FavViewModelFactory
 import com.example.skycast.home.view.HomeFragment
 import com.example.skycast.model.WeatherRepositoryImpl
 import com.example.skycast.network.WeatherRemoteDataSourceImpl
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class FavoriteFragment : Fragment() {
@@ -56,7 +57,7 @@ class FavoriteFragment : Fragment() {
                 addToBackStack(null)
             }
         }
-
+        viewModel.fetchAllCurrentWeather()
         setupObservers()
 
         return view
@@ -69,20 +70,6 @@ class FavoriteFragment : Fragment() {
             },
             onImageClick = { idKey ->
                 viewModel.getCurrentWeatherById(idKey)
-                viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.currentGetWeather.collect { currentWeather ->
-                        viewModel.currentGetForCastWeather.collect { forecastWeather ->
-                            if (currentWeather != null && forecastWeather != null) {
-                                sharedWeatherViewModel.setWeatherData(currentWeather, forecastWeather)
-                                HomeFragment.isCurrentLocation = false
-                                parentFragmentManager.commit {
-                                    replace(R.id.fragment_container, HomeFragment())
-                                    addToBackStack(null)
-                                }
-                            }
-                        }
-                    }
-                }
             }
         )
         recyclerView.adapter = adapter
@@ -92,9 +79,33 @@ class FavoriteFragment : Fragment() {
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.currentWeatherList.collect { weatherList ->
+                Log.d("Observer", "Weather list updated: $weatherList")
                 adapter.setWeatherList(weatherList)
             }
         }
-        viewModel.fetchAllCurrentWeather()
+
+        // Combine both current weather and forecast weather
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.currentGetWeather.combine(viewModel.currentGetForCastWeather) { currentWeather, forecastWeather ->
+                currentWeather to forecastWeather
+            }.collect { (currentWeather, forecastWeather) ->
+                if (currentWeather != null && forecastWeather != null) {
+                    sharedWeatherViewModel.setWeatherData(currentWeather, forecastWeather)
+                    HomeFragment.isCurrentLocation = false
+                    parentFragmentManager.commit {
+                        replace(R.id.fragment_container, HomeFragment())
+                        addToBackStack(null)
+                    }
+                }
+            }
+        }
+
+
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+         // Fetch latest weather data here
     }
 }

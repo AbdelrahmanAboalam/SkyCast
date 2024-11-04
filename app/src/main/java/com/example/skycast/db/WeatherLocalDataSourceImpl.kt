@@ -29,6 +29,10 @@ class WeatherLocalDataSourceImpl(private val context: Context, private val weath
         return weatherDao.getWeatherForecastById(id)
     }
 
+    override suspend fun getWeatherById2(id: Int): WeatherForecastResponse {
+        return weatherDao.getWeatherForecastById2(id)
+    }
+
     override suspend fun deleteWeather(weather: WeatherForecastResponse) {
         weatherDao.deleteWeatherForecastResponse(weather)
     }

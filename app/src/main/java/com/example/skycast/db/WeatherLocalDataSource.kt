@@ -8,6 +8,7 @@ interface WeatherLocalDataSource {
     suspend fun insertWeather(weather: WeatherForecastResponse) // Changed parameter type to WeatherForecastResponse
     fun getAllWeather(): Flow<List<WeatherForecastResponse>> // Changed return type to List<WeatherForecastResponse>
     suspend fun getWeatherById(id: Int): WeatherForecastResponse
+    suspend fun getWeatherById2(id: Int): WeatherForecastResponse
     suspend fun deleteWeather(weather: WeatherForecastResponse)
     suspend fun updateWeather(weather: WeatherForecastResponse)
 

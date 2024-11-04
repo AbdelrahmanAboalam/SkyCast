@@ -6,12 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Switch
+import androidx.lifecycle.ViewModelProvider
 import com.example.skycast.R
+import com.example.skycast.db.WeatherLocalDataSourceImpl
+import com.example.skycast.model.WeatherRepository
+import com.example.skycast.model.WeatherRepositoryImpl
+import com.example.skycast.network.WeatherRemoteDataSourceImpl
+import com.example.skycast.setting.viewmodel.SettingViewModel
+import com.example.skycast.setting.viewmodel.SettingViewModelFactory
 
 class SettingsFragment : Fragment() {
 
     private lateinit var settingsManager: SettingsManager
     private  var onSettingsChangeListener: OnSettingsChangeListener?=null
+    private lateinit var viewModel: SettingViewModel
+    private lateinit var repository: WeatherRepository
+
 
     fun setOnSettingsChangeListener(listener: OnSettingsChangeListener) {
         onSettingsChangeListener = listener
@@ -23,6 +33,10 @@ class SettingsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
         settingsManager = SettingsManager(requireContext())
+        repository = WeatherRepositoryImpl(WeatherRemoteDataSourceImpl(), WeatherLocalDataSourceImpl(requireContext()))
+
+        val factory = SettingViewModelFactory(repository, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(SettingViewModel::class.java)
 
         setupLanguageSwitches(view)
         setupUnitSwitches(view)
@@ -45,13 +59,14 @@ class SettingsFragment : Fragment() {
                 settingsManager.setLanguage("ar")
                 onSettingsChangeListener?.onLanguageChanged("ar")
                 requireActivity().recreate()
+                viewModel.fetchAllSettings()
             }
             else{
                 englishSwitch.isChecked=true
                 settingsManager.setLanguage("en")
                 onSettingsChangeListener?.onLanguageChanged("en")
                 requireActivity().recreate()
-
+                viewModel.fetchAllSettings()
             }
         }
 
@@ -61,13 +76,14 @@ class SettingsFragment : Fragment() {
                 settingsManager.setLanguage("en")
                 onSettingsChangeListener?.onLanguageChanged("en")
                 requireActivity().recreate()
-
+                viewModel.fetchAllSettings()
             }
             else{
                 arabicSwitch.isChecked=true
                 settingsManager.setLanguage("ar")
                 onSettingsChangeListener?.onLanguageChanged("ar")
                 requireActivity().recreate()
+                viewModel.fetchAllSettings()
             }
         }
     }
@@ -86,36 +102,48 @@ class SettingsFragment : Fragment() {
         metricSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 updateUnitPreferences("metric", view=view)
+                updateUnitSwitches("metric", view=view)
+                viewModel.fetchAllSettings()
             }
         }
 
         standardSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 updateUnitPreferences("standard", view=view)
+                updateUnitSwitches("standard", view=view)
+                viewModel.fetchAllSettings()
             }
         }
 
         imperialSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 updateUnitPreferences("imperial", view=view)
+                updateUnitSwitches("imperial", view=view)
+                viewModel.fetchAllSettings()
             }
         }
 
         celsiusSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 updateUnitPreferences("metric", true, view=view)
+                updateUnitSwitches("metric", view=view)
+                viewModel.fetchAllSettings()
             }
         }
 
         kelvinSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 updateUnitPreferences("standard", true, view=view)
+                updateUnitSwitches("standard", view=view)
+                viewModel.fetchAllSettings()
             }
         }
 
         fahrenheitSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 updateUnitPreferences("imperial", true, view=view)
+                updateUnitSwitches("imperial", view=view)
+                viewModel.fetchAllSettings()
             }
         }
     }

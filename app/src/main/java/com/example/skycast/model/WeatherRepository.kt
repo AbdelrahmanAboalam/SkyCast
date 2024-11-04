@@ -14,6 +14,7 @@ interface WeatherRepository {
     suspend fun insertWeather(weather: WeatherForecastResponse)
     suspend fun getAllWeather(): Flow<List<WeatherForecastResponse>>
     suspend fun getWeatherById(id: Int): WeatherForecastResponse?
+    suspend fun getWeatherById2(id: Int): WeatherForecastResponse
     suspend fun deleteWeather(weather: WeatherForecastResponse)
     suspend fun updateWeather(weather: WeatherForecastResponse)
 

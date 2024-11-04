@@ -3,26 +3,29 @@ package com.example.skycast.fav.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.skycast.R
 import com.example.skycast.home.view.getImage
-import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 
-class FavouriteAdapter(private val onFavoriteClick: (CurrentWetherResponse) -> Unit,
-                       private val onImageClick: (Int) -> Unit):
-RecyclerView.Adapter<FavouriteAdapter.FavouriteViewHolder>(){
 
-    private var FavList: List<CurrentWetherResponse> = emptyList()
+class FavouriteAdapter(
+    private val onFavoriteClick: (CurrentWetherResponse) -> Unit,
+    private val onImageClick: (Int) -> Unit
+) : RecyclerView.Adapter<FavouriteAdapter.FavouriteViewHolder>() {
 
+    private var favList: List<CurrentWetherResponse> = emptyList()
+
+    // Function to update the weather list with DiffUtil
     fun setWeatherList(newList: List<CurrentWetherResponse>) {
-        FavList = newList
-        notifyDataSetChanged()
+        val diffCallback = WeatherDiffCallback(favList, newList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        favList = newList
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteViewHolder {
@@ -31,30 +34,25 @@ RecyclerView.Adapter<FavouriteAdapter.FavouriteViewHolder>(){
     }
 
     override fun onBindViewHolder(holder: FavouriteViewHolder, position: Int) {
-        holder.bind(FavList[position])
+        holder.bind(favList[position])
     }
 
-    override fun getItemCount(): Int {
-        return FavList.size
-    }
-
+    override fun getItemCount(): Int = favList.size
 
     inner class FavouriteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
         private val cityName: TextView = itemView.findViewById(R.id.cityName)
         private val tempMin: TextView = itemView.findViewById(R.id.tempMin)
         private val tempMax: TextView = itemView.findViewById(R.id.tempMax)
         private val weatherIcon: ImageView = itemView.findViewById(R.id.weatherIcon)
         private val btnFavorite: ImageButton = itemView.findViewById(R.id.image_button)
-        private val imageView: ImageView = itemView.findViewById(R.id.weatherIcon)
 
         fun bind(currentWeather: CurrentWetherResponse) {
             cityName.text = currentWeather.name
             tempMin.text = currentWeather.main.temp_min.toString()
             tempMax.text = currentWeather.main.temp_max.toString()
 
-            // Load weather icon using Glide or any image loading library
-            weatherIcon.setImageResource(getImage( currentWeather.weather[0].icon))
+            // Load weather icon
+            weatherIcon.setImageResource(getImage(currentWeather.weather[0].icon))
 
             // Handle favorite button click
             btnFavorite.setOnClickListener {

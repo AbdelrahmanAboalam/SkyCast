@@ -36,9 +36,6 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
             if (isNetworkAvailable(context)) {
                 repository.getAllCurrent().collect { weatherData ->
                     _currentWeatherList.value = weatherData
-                    weatherData.forEach { weather ->
-                        fetchAndUpdateWeather(weather)
-                    }
                 }
             }
         }
@@ -47,7 +44,8 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
     fun deleteCurrentWeather(weather: CurrentWetherResponse) {
         viewModelScope.launch {
             repository.deleteCurrentWeather(weather)
-            fetchAllCurrentWeather()
+            repository.deleteWeather(repository.getWeatherById2(weather.idKey))
+
         }
     }
 

@@ -14,7 +14,7 @@ interface  ApiService {
         @Query("lon") lon: Double,
         @Query("units") units: String = "metric",
         @Query("lang") lang: String,
-        @Query("appid") apiKey: String = "cb075589ca8be42176e5cf5162ab2e69"
+        @Query("appid") apiKey: String = "5b9621c32558cb07201b4c0f477521a8"
     ): Response<WeatherForecastResponse>
 
     @GET("weather")
@@ -23,7 +23,7 @@ interface  ApiService {
         @Query("lon") lon: Double,
         @Query("units") units: String = "metric",
         @Query("lang") lang: String,
-        @Query("appid") apiKey: String = "cb075589ca8be42176e5cf5162ab2e69"
+        @Query("appid") apiKey: String = "5b9621c32558cb07201b4c0f477521a8"
     ): Response<CurrentWetherResponse>
 
     @GET("weather")
@@ -31,6 +31,6 @@ interface  ApiService {
         @Query("q") cityName: String,
         @Query("units") units: String = "metric",
         @Query("lang") lang: String,
-        @Query("appid") apiKey: String = "cb075589ca8be42176e5cf5162ab2e69"
+        @Query("appid") apiKey: String = "5b9621c32558cb07201b4c0f477521a8"
     ): Response<CurrentWetherResponse>
 }
