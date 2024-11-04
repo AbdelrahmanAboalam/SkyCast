@@ -3,7 +3,11 @@ package com.example.skycast.home.view
 import SharedWeatherViewModel
 import com.example.skycast.home.viewmodel.HomeViewModel
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Context
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -21,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.skycast.LocationGetter
 import com.example.skycast.map.view.MapFragment
 import com.example.skycast.R
+import com.example.skycast.db.Cashing
 import com.example.skycast.db.WeatherLocalDataSourceImpl
 import com.example.skycast.home.viewmodel.HomeViewModelFactory
 import com.example.skycast.model.DailyWeatherData
@@ -35,6 +40,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.junit.runner.manipulation.Ordering
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -68,6 +74,7 @@ class HomeFragment : Fragment() {
     private lateinit var txt_humidity:TextView
     private lateinit var txt5DayForecast: TextView
     private lateinit var txtToday: TextView
+    private lateinit var caching : Cashing
 
     companion object {
         var isCurrentLocation = true
@@ -123,8 +130,19 @@ class HomeFragment : Fragment() {
         txt5DayForecast = view.findViewById(R.id.txt_5_day_forecast)
         txtToday = view.findViewById(R.id.txt_today)
 
-
         settingsManager = SettingsManager(requireContext())
+        caching= Cashing(requireContext())
+        val cachedCurrentWeather = caching.getCachedCurrentWeather()
+        val cachedWeatherForecast = caching.getCachedWeatherForecast()
+
+
+        if(cachedCurrentWeather != null && cachedWeatherForecast != null && !isNetworkAvailable(requireContext())){
+            updateCurrentWeather(cachedCurrentWeather)
+            updateForecastWeather(cachedWeatherForecast)
+        }
+
+
+
 
         // Setup RecyclerViews
         hourRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -141,12 +159,14 @@ class HomeFragment : Fragment() {
         // Observe LiveData from ViewModel
         viewModel.currentWeather.observe(viewLifecycleOwner, Observer { currentWeather ->
             currentWeather?.let {
+                caching.cacheCurrentWeather(it)
                 updateCurrentWeather(it)
             }
         })
 
         viewModel.weatherForecast.observe(viewLifecycleOwner, Observer { forecast ->
             forecast?.let {
+                caching.cacheWeatherForecast(it)
                 updateForecastWeather(it)
             }
         })
@@ -218,6 +238,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateCurrentWeather(current: CurrentWetherResponse) {
+
+        if (current == null || current.main == null) {
+            return
+        }
         if(settingsManager.getUnit() == "metric") {
             txtTemp.text = "${current.main.temp.toInt()}°C"
             if (settingsManager.getLanguage() == "en") {
@@ -304,6 +328,10 @@ class HomeFragment : Fragment() {
 
     private fun updateForecastWeather(forecast: WeatherForecastResponse) {
         // Update UI components with forecast data
+
+        if (forecast == null || forecast.city == null) {
+            return
+        }
         txtRain.text = "${forecast.list[0].pop?.times(100)}%"
 
         val currentTimeInSeconds = System.currentTimeMillis() / 1000L // Get current time in seconds
@@ -332,5 +360,16 @@ class HomeFragment : Fragment() {
         // Set adapters
         hourRecyclerView.adapter = HourlyForecastAdapter(hourlyData)
         forecastRecyclerView.adapter = DailyForecastAdapter(dailyData)
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = connectivityManager.activeNetwork?.let { connectivityManager.getNetworkCapabilities(it) }
+            networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            activeNetworkInfo != null && activeNetworkInfo.isConnected
+        }
     }
 }

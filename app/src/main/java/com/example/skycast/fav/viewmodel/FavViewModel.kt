@@ -29,12 +29,12 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
 
     fun fetchAllCurrentWeather() {
         viewModelScope.launch {
-            if (isNetworkAvailable(context)) {
+
                 repository.getAllCurrent().collect { weatherData ->
                     _currentWeatherList.value = weatherData
                 }
             }
-        }
+
     }
 
     fun deleteCurrentWeather(weather: CurrentWetherResponse) {
@@ -53,14 +53,5 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
         }
     }
 
-    private fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val networkCapabilities = connectivityManager.activeNetwork?.let { connectivityManager.getNetworkCapabilities(it) }
-            networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-        } else {
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            activeNetworkInfo != null && activeNetworkInfo.isConnected
-        }
-    }
+
 }

@@ -1,19 +1,28 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnAddAlarm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add Alarm" />
-
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarmRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp" />
-</LinearLayout>
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/btnAddAlarm"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Circular Button -->
+    <ImageButton
+        android:id="@+id/btnAddAlarm"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:scaleType="fitCenter"
+        android:layout_margin="16dp"
+        android:background="@null"
+        android:src="@drawable/alarm"
+     />
+</RelativeLayout>

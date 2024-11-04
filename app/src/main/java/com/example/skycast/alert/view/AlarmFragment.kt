@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -42,7 +43,7 @@ class AlarmFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_alarm, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.alarmRecyclerView)
-        val btnAddAlarm: Button = view.findViewById(R.id.btnAddAlarm)
+        val btnAddAlarm: ImageButton = view.findViewById(R.id.btnAddAlarm)
 
 
 

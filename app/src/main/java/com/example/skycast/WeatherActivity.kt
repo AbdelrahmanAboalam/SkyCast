@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.skycast.alert.view.AlarmFragment
+import com.example.skycast.db.Cashing
 import com.example.skycast.fav.view.FavoriteFragment
 import com.example.skycast.home.view.HomeFragment
 import com.example.skycast.setting.OnSettingsChangeListener
@@ -34,6 +35,9 @@ class WeatherActivity : AppCompatActivity(), OnSettingsChangeListener {
 
         settingsManager = SettingsManager(this)
         settingsManager.initializeDefaults()
+
+        val cashing = Cashing(this)
+        cashing.initializeCache()
 
 //        val currentLocale = Locale.getDefault().language
 //        if (settingsManager.getLanguage() != "en") {
