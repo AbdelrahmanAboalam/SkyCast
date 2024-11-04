@@ -1,6 +1,7 @@
 package com.example.skycast.db
 
 import android.content.Context
+import com.example.skycast.alert.view.Alarm
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import kotlinx.coroutines.Dispatchers
@@ -57,5 +58,15 @@ class WeatherLocalDataSourceImpl(private val context: Context, private val weath
         weatherDao.updateCurrentWeatherResponse(current)
     }
 
+    override suspend fun insertAlarm(alarm: Alarm) = withContext(Dispatchers.IO) {
+        weatherDao.insertAlarm(alarm)
+    }
 
+    override suspend fun getAllAlarms(): List<Alarm> {
+        return weatherDao.getAllAlarms()
+    }
+
+    override suspend fun deleteAlarm(alarm: Alarm) {
+        weatherDao.deleteAlarm(alarm)
+    }
 }

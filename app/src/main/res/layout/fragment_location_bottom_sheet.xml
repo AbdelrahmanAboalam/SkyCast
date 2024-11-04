@@ -1,35 +1,66 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="180dp"
+    android:background="@drawable/background"
+    android:orientation="horizontal"
+    android:padding="16dp">
 
-    <!-- Existing TextViews -->
+    <ImageView
+        android:id="@+id/img_weather_icon"
+        android:layout_width="100dp"
+        android:layout_height="102dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tv_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="92dp"
+        android:layout_height="36dp"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/black"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tv_city"
+        app:layout_constraintHorizontal_bias="0.527"
+        app:layout_constraintStart_toStartOf="@+id/tv_city" />
+
+    <ImageButton
+        android:id="@+id/btn_save_weather"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="12dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/heart_outline"
+        app:layout_constraintBottom_toTopOf="@+id/btn_view_all"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.45" />
 
     <TextView
         android:id="@+id/tv_city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="171dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/black"
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/img_weather_icon"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_cloud"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <!-- New Button -->
-    <Button
-        android:id="@+id/btn_save_weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save Weather" />
-
-    <Button
+    <ImageButton
         android:id="@+id/btn_view_all"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View All Data" />
-</LinearLayout>
+        android:layout_width="45dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="12dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:scaleType="fitXY"
+        android:src="@drawable/home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

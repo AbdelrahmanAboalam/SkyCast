@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class SettingViewModel(private val repository: WeatherRepository, private val context: Context) : ViewModel() {
 
 
-    private lateinit var sharedPreferences: SettingsManager
+    private  var sharedPreferences: SettingsManager
 
     init {
         sharedPreferences = SettingsManager(context)

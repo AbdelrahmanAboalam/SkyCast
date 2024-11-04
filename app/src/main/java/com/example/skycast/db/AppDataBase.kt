@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.skycast.alert.view.Alarm
 import com.example.skycast.db.Converters.WeatherDataConverter
 import com.example.skycast.db.Converters.WeatherConverter
 import com.example.skycast.db.Converters.WeatherListConverter
@@ -13,7 +14,7 @@ import com.example.skycast.model.remote.City
 import com.example.skycast.model.remote.WeatherData
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 @Database(
-    entities = [WeatherForecastResponse::class, CurrentWetherResponse::class],
+    entities = [WeatherForecastResponse::class, CurrentWetherResponse::class, Alarm::class],
     version = 1
 )
 @TypeConverters(WeatherDataConverter::class, WeatherConverter::class,WeatherListConverter::class)

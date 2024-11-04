@@ -60,6 +60,10 @@ class FakeRepository: WeatherRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun getWeatherById2(id: Int): WeatherForecastResponse {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun deleteWeather(weather: WeatherForecastResponse) {
         TODO("Not yet implemented")
     }

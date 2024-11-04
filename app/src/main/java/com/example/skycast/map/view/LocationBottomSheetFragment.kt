@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.commit
@@ -14,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.skycast.R
 import com.example.skycast.db.WeatherLocalDataSourceImpl
 import com.example.skycast.home.view.HomeFragment
+import com.example.skycast.home.view.getImage
 import com.example.skycast.map.viewmodel.MapViewModel
 import com.example.skycast.map.viewmodel.MapViewModelFactory
 import com.example.skycast.model.WeatherRepositoryImpl
@@ -59,9 +62,9 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
 
         val temperatureTextView: TextView = view.findViewById(R.id.tv_temperature)
         val cityTextView: TextView = view.findViewById(R.id.tv_city)
-        val cloudTextView: TextView = view.findViewById(R.id.tv_cloud)
-        val viewAllButton: Button = view.findViewById(R.id.btn_view_all)
-        val saveWeatherButton: Button = view.findViewById(R.id.btn_save_weather)
+        val cloudImage: ImageView = view.findViewById(R.id.img_weather_icon)
+        val viewAllButton: ImageButton = view.findViewById(R.id.btn_view_all)
+        val saveWeatherButton: ImageButton = view.findViewById(R.id.btn_save_weather)
 
         sharedWeatherViewModel = ViewModelProvider(requireActivity()).get(SharedWeatherViewModel::class.java)
 
@@ -72,7 +75,8 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
                 sharedWeatherViewModel.setWeatherData(weather, forecast)
                 temperatureTextView.text = "${weather.main.temp}°C"
                 cityTextView.text = weather.name
-                cloudTextView.text = "Cloudiness: ${weather.clouds.all}%"
+                cloudImage.setImageResource(getImage(weather.weather[0].main))
+
             }
         }
 
@@ -89,19 +93,17 @@ class LocationBottomSheetFragment : BottomSheetDialogFragment() {
         saveWeatherButton.setOnClickListener {
             val currentWeather = mapViewModel.currentWeather.value
             val weatherForecast = mapViewModel.weatherForecast.value
+            saveWeatherButton.setImageResource(R.drawable.heart_filled)
 
             if (currentWeather != null && weatherForecast != null) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     try {
                         weatherRepository.insertWeather(weatherForecast)
                         weatherRepository.insertWeather(currentWeather)
-                        Toast.makeText(requireContext(), "Weather saved successfully!", Toast.LENGTH_SHORT).show()
                     } catch (e: Exception) {
-                        Toast.makeText(requireContext(), "Failed to save weather: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }
             } else {
-                Toast.makeText(requireContext(), "Weather data is not available!", Toast.LENGTH_SHORT).show()
             }
         }
     }

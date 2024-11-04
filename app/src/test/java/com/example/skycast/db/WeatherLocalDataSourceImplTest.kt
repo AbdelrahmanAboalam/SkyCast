@@ -49,7 +49,7 @@ class WeatherLocalDataSourceImplTest {
     }
 
     @Test
-    fun insertWeather_retrievesWeather() = runTest {
+    fun WeatherLocalDataSourceImpl_insertWeather_retrievesWeather() = runTest {
         val weather = WeatherForecastResponse(
             idKey = 1,
             city = City(name = "Test City", id = 1),
@@ -62,13 +62,12 @@ class WeatherLocalDataSourceImplTest {
         weatherLocalDataSource.insertWeather(weather)
 
         val result = weatherLocalDataSource.getWeatherById(1)
-
         assertThat(result.idKey, `is`(1))
         assertThat(result.city.name, `is`("Test City"))
     }
 
     @Test
-    fun insertCurrentWeather_retrievesCurrentWeather() = runTest {
+    fun WeatherLocalDataSourceImpl_insertCurrentWeather_retrievesCurrentWeather() = runTest {
         val currentWeather = CurrentWetherResponse(
             idKey = 2,
             base = "base",
@@ -78,14 +77,13 @@ class WeatherLocalDataSourceImplTest {
         weatherLocalDataSource.insertWeather(currentWeather)
 
         val result = weatherLocalDataSource.getCurrentWeatherById(2)
-
         assertThat(result.idKey, `is`(2))
         assertThat(result.base, `is`("base"))
         assertThat(result.clouds.all, `is`(1))
     }
 
     @Test
-    fun deleteWeather_checkIfDeleted() = runTest {
+    fun WeatherLocalDataSourceImpl_deleteWeather_checkIfDeleted() = runTest {
         val weather = WeatherForecastResponse(
             idKey = 1,
             city = City(name = "Test City", id = 1),
@@ -103,7 +101,7 @@ class WeatherLocalDataSourceImplTest {
     }
 
     @Test
-    fun getAllWeather_retrievesAllWeather() = runTest {
+    fun WeatherLocalDataSourceImpl_getAllWeather_retrievesAllWeather() = runTest {
         val weather1 = WeatherForecastResponse(idKey = 1, city = City(name = "City 1", id = 1), cnt = 1, cod = "200", list = emptyList(), message = 0)
         val weather2 = WeatherForecastResponse(idKey = 2, city = City(name = "City 2", id = 2), cnt = 1, cod = "200", list = emptyList(), message = 0)
 
@@ -111,7 +109,6 @@ class WeatherLocalDataSourceImplTest {
         weatherLocalDataSource.insertWeather(weather2)
 
         val result = weatherLocalDataSource.getAllWeather().first()
-
         assertThat(result.size, `is`(2))
         assertThat(result.map { it.idKey }, `is`(listOf(1, 2)))
     }

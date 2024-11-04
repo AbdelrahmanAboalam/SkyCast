@@ -10,6 +10,7 @@ import com.example.skycast.model.remote.current.CurrentWetherResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
@@ -45,7 +46,7 @@ class WeatherDaoTest {
     }
 
     @Test
-    fun insertWeatherForecastResponse_andGetById() = runBlockingTest {
+    fun WeatherDao_insertWeatherForecastResponse_retrievesById() = runTest {
         val weatherForecast = WeatherForecastResponse(
             idKey = 1,
             city = City(name = "Test City", id = 1),
@@ -64,7 +65,7 @@ class WeatherDaoTest {
     }
 
     @Test
-    fun updateWeatherForecastResponse_andGetById() = runBlockingTest {
+    fun WeatherDao_updateWeatherForecastResponse_retrievesUpdatedById() = runTest {
         val initialForecastResponse = WeatherForecastResponse(
             idKey = 2,
             city = City(name = "Test City", id = 1),
@@ -92,9 +93,8 @@ class WeatherDaoTest {
         assertThat(result.idKey, `is`(updatedForecastResponse.idKey))
     }
 
-
     @Test
-    fun insertCurrentWeatherResponse_andGetById() = runBlockingTest {
+    fun WeatherDao_insertCurrentWeatherResponse_retrievesById() = runBlockingTest {
         val currentWeatherResponse = CurrentWetherResponse(
             idKey = 1,
         )
@@ -108,7 +108,7 @@ class WeatherDaoTest {
     }
 
     @Test
-    fun updateCurrentWeatherResponse_andGetById() = runBlockingTest {
+    fun WeatherDao_updateCurrentWeatherResponse_retrievesUpdatedById() = runBlockingTest {
         val initialCurrentWeatherResponse = CurrentWetherResponse(
             idKey = 1,
         )

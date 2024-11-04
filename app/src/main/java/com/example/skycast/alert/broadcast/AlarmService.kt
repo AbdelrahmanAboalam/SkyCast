@@ -13,10 +13,16 @@ import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.ViewModelProvider
 import com.example.skycast.MainActivity
 import com.example.skycast.R
+import com.example.skycast.alert.view.Alarm
+import com.example.skycast.alert.viewmodel.AlarmViewModel
+import com.example.skycast.alert.viewmodel.AlarmViewModelFactory
 import com.example.skycast.model.WeatherRepository
 import com.example.skycast.model.WeatherRepositoryImpl
 import com.example.skycast.model.remote.current.CurrentWetherResponse
@@ -31,6 +37,7 @@ class AlarmService : Service() {
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var weatherRepository: WeatherRepository
     private val pendingIntentMap = mutableMapOf<Int, PendingIntent>()
+    private lateinit var viewModel: AlarmViewModel
 
 
     override fun onCreate() {
@@ -38,16 +45,43 @@ class AlarmService : Service() {
         weatherRepository = WeatherRepositoryImpl(
             WeatherRemoteDataSourceImpl(),
             WeatherLocalDataSourceImpl(applicationContext)
+
         )
+        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        if (alarmSound != null) {
+            mediaPlayer = MediaPlayer.create(this, alarmSound)
+        }
+
     }
 
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        val alarmId = intent?.getIntExtra("alarmId", 1) ?: 1
         val alarmName = intent?.getStringExtra("alarmName") ?: "Alarm"
         val latitude = intent?.getDoubleExtra("latitude", 0.0) ?: 0.0
         val longitude = intent?.getDoubleExtra("longitude", 0.0) ?: 0.0
+        val hour = intent?.getIntExtra("hour", 0) ?: 0 // Retrieve the hour
+        val minute = intent?.getIntExtra("minute", 0) ?: 0
         val requestCode = alarmName.hashCode()
-        // Play the alarm sound
+
+        val alarm = Alarm(
+            id = alarmId,
+            name = alarmName,
+            time = "$hour:$minute",
+            hour = hour,
+            minute = minute,
+            latitude = latitude,
+            longitude = longitude
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            weatherRepository.deleteAlarm(alarm)
+            // Optionally handle the success of the deletion here
+        }
+
+
+
 
         val sharedPreferences = SettingsManager(applicationContext)
         val useAlarmSound = sharedPreferences.getNotificationType()
@@ -60,16 +94,14 @@ class AlarmService : Service() {
             return START_NOT_STICKY
         }
 
-        // Fetch weather using the location
         fetchWeather(latitude, longitude, alarmName)
 
         return START_NOT_STICKY
     }
 
     private fun dismissAlarm(requestCode: Int) {
-        stopAlarmSound()
 
-        // Cancel the alarm
+
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pendingIntent = pendingIntentMap[requestCode] ?: PendingIntent.getBroadcast(
             this,
@@ -80,16 +112,15 @@ class AlarmService : Service() {
 
         alarmManager.cancel(pendingIntent)
 
-        // Remove the PendingIntent from the map
         pendingIntentMap.remove(requestCode)
-
-        // Cancel the notification
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        stopAlarmSound()
         notificationManager.cancelAll()
 
+        stopForeground(true)
         stopSelf()
-        Toast.makeText(this, "Alarm Dismissed", Toast.LENGTH_SHORT).show()
     }
+
 
 
 
@@ -102,12 +133,10 @@ class AlarmService : Service() {
 
                 val currentWeatherResponse: CurrentWetherResponse = weatherRepository.getCurrentWeather(latitude, longitude, language, unit)
 
-                // Update UI on main thread
                 launch(Dispatchers.Main) {
                     val currentTemp = currentWeatherResponse.main.temp // Adjust according to your API response
                     Toast.makeText(applicationContext, "Current Temperature: $currentTemp °C", Toast.LENGTH_SHORT).show()
 
-                    // Setup the notification with the temperature
                     setupNotification(alarmName, currentTemp)
                 }
             } catch (e: Exception) {
@@ -122,7 +151,6 @@ class AlarmService : Service() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "alarm_channel_id"
 
-        // Create notification channel if necessary
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, "Alarm Channel", NotificationManager.IMPORTANCE_HIGH).apply {
                 description = "Channel for alarm notifications"
@@ -130,7 +158,6 @@ class AlarmService : Service() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Create intents for notification actions
         val dismissIntent = Intent(this, AlarmService::class.java).apply {
             action = "DISMISS_ALARM"
         }
@@ -141,17 +168,15 @@ class AlarmService : Service() {
         }
         val openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        // Build and display the notification
         val notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher) // Replace with your app icon
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Alarm Triggered")
             .setContentText("Alarm: $alarmName\nCurrent Temperature: $currentTemp °C")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
-            .addAction(R.drawable.ic_launcher_foreground, "Dismiss", dismissPendingIntent) // Replace with your dismiss icon
-            .addAction(R.drawable.alarm, "Open App", openAppPendingIntent) // Replace with your open app icon
+            .addAction(R.drawable.ic_launcher_foreground, "Dismiss", dismissPendingIntent)
+            .addAction(R.drawable.alarm, "Open App", openAppPendingIntent)
             .build()
-
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 
@@ -168,38 +193,32 @@ class AlarmService : Service() {
         }
 
         return NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your app icon
-            .setContentTitle("Alarm Triggered")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("Notification")
             .setContentText("Alarm: $alarmName")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setOngoing(true) // Make it ongoing
+            .setOngoing(true)
             .build()
     }
 
     private fun playAlarmSound() {
         // Play the default alarm sound
-        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        mediaPlayer = MediaPlayer.create(this, alarmSound)
 
-        mediaPlayer?.apply {
-            isLooping = true
-            start()
-        }
+            mediaPlayer?.apply {
+                start()
+            }
+
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopAlarmSound()
-    }
-
     private fun stopAlarmSound() {
         mediaPlayer?.let {
             if (it.isPlaying) {
+                Log.d("AlarmService", "Stopping alarm sound")
                 it.stop()
             }
             it.release()
             mediaPlayer = null
-        }
+        } ?: Log.d("AlarmService", "MediaPlayer is null")
+        mediaPlayer?.stop()
     }
 
     override fun onBind(intent: Intent?): IBinder? {

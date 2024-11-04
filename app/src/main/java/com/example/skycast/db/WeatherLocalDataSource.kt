@@ -1,5 +1,6 @@
 package com.example.skycast.db
 
+import com.example.skycast.alert.view.Alarm
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,11 @@ interface WeatherLocalDataSource {
     suspend fun getCurrentWeatherById(id: Int): CurrentWetherResponse
     suspend fun deleteCurrentWeather(current : CurrentWetherResponse)
     suspend fun updateCurrentWeather(current : CurrentWetherResponse)
+
+
+    suspend fun insertAlarm(alarm: Alarm)
+    suspend fun getAllAlarms(): List<Alarm>
+    suspend fun deleteAlarm(alarm: Alarm)
 
 
 

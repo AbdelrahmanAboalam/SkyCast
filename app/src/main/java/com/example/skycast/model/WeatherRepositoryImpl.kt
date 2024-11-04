@@ -1,5 +1,6 @@
 package com.example.skycast.model
 
+import com.example.skycast.alert.view.Alarm
 import com.example.skycast.db.WeatherLocalDataSource
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
@@ -100,5 +101,17 @@ class WeatherRepositoryImpl(
 
     override suspend fun updateCurrentWeather(current: CurrentWetherResponse) {
         localDataSource.updateCurrentWeather(current)
+    }
+
+    override suspend fun insertAlarm(alarm: Alarm) {
+        localDataSource.insertAlarm(alarm)
+    }
+
+    override suspend fun getAllAlarms(): List<Alarm> {
+        return localDataSource.getAllAlarms()
+    }
+
+    override suspend fun deleteAlarm(alarm: Alarm) {
+        localDataSource.deleteAlarm(alarm)
     }
 }

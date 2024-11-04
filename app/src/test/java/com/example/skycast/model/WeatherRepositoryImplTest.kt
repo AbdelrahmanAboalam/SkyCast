@@ -11,7 +11,6 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
-
 class WeatherRepositoryImplTest {
 
     private lateinit var weatherRepository: WeatherRepositoryImpl
@@ -26,7 +25,7 @@ class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun getWeatherForecast_RemoteSuccessful_ReturnsWeatherData() = runTest {
+    fun WeatherRepository_getWeatherForecast_RemoteSuccessful_ReturnsWeatherData() = runTest {
         // Given
         val expectedResponse = WeatherForecastResponse()
         fakeRemoteDataSource.weatherForecastResponse = expectedResponse
@@ -39,7 +38,7 @@ class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun getWeatherForecast_RemoteFailed_ThrowsException() = runTest {
+    fun WeatherRepository_getWeatherForecast_RemoteFailed_ThrowsException() = runTest {
         // Given
         fakeRemoteDataSource.shouldReturnError = true
 
@@ -53,7 +52,7 @@ class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun getCurrentWeather_RemoteSuccessful_ReturnsCurrentWeather() = runTest {
+    fun WeatherRepository_getCurrentWeather_RemoteSuccessful_ReturnsCurrentWeather() = runTest {
         // Given
         val expectedResponse = CurrentWetherResponse()
         fakeRemoteDataSource.currentWeatherResponse = expectedResponse
@@ -64,5 +63,4 @@ class WeatherRepositoryImplTest {
         // Then
         assertThat(result, `is`(expectedResponse))
     }
-
 }

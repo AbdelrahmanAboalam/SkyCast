@@ -27,10 +27,6 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
     private val _currentGetForCastWeather = MutableStateFlow<WeatherForecastResponse?>(null)
     val currentGetForCastWeather: StateFlow<WeatherForecastResponse?> get() = _currentGetForCastWeather
 
-    private val sharedPreferences = SettingsManager(context)
-    private val language: String = sharedPreferences.getLanguage() ?: "en"
-    private val unit: String = sharedPreferences.getUnit()
-
     fun fetchAllCurrentWeather() {
         viewModelScope.launch {
             if (isNetworkAvailable(context)) {
@@ -49,28 +45,6 @@ class FavViewModel(private val repository: WeatherRepository, private val contex
         }
     }
 
-    private suspend fun fetchAndUpdateWeather(weatherData: CurrentWetherResponse) {
-        if (isNetworkAvailable(context)) {
-            val currentWeatherResponse = repository.getCurrentWeather(
-                weatherData.coord.lat,
-                weatherData.coord.lon,
-                language,
-                unit
-            )
-            currentWeatherResponse.idKey = weatherData.idKey
-            Log.d("FavViewModel", "Updating current weather: $currentWeatherResponse")
-            repository.updateCurrentWeather(currentWeatherResponse)
-
-            val forecastResponse = repository.getWeatherForecast(
-                weatherData.coord.lat,
-                weatherData.coord.lon,
-                language,
-                unit
-            )
-            forecastResponse.idKey = weatherData.idKey
-            repository.updateWeather(forecastResponse)
-        }
-    }
 
     fun getCurrentWeatherById(idKey: Int) {
         viewModelScope.launch {

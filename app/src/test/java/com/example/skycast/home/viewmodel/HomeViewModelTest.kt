@@ -52,21 +52,20 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun fetchWeather_updatesCurrentWeatherAndWeatherForecast() = runTest {
+    fun HomeViewModel_fetchWeather_updatesCurrentWeatherAndForecast() = runTest {
         // Given
         val latitude = 40.7128
         val longitude = -74.0060
         val mockCurrentWeather = CurrentWetherResponse()
         val mockForecast = WeatherForecastResponse()
-
         weatherRepository.currentWeatherResponse = mockCurrentWeather
         weatherRepository.weatherForecastResponse = mockForecast
 
         // When
         homeViewModel.fetchWeather(latitude, longitude)
-        advanceUntilIdle() // Ensure all coroutines have completed
+        advanceUntilIdle()
 
-        // Assert
+        // Then
         val currentWeather = homeViewModel.currentWeather.getOrAwaitValue()
         val forecast = homeViewModel.weatherForecast.getOrAwaitValue()
         assertThat(currentWeather, equalTo(mockCurrentWeather))
@@ -74,19 +73,17 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun fetchWeatherByCity_updatesCurrentWeatherByCity() = runTest {
+    fun HomeViewModel_fetchWeatherByCity_updatesCurrentWeatherByCity() = runTest {
         // Given
-        val cityName = "New York"
+        val cityName = "Cairo"
         val mockCurrentWeatherByCity = CurrentWetherResponse(coord = Coord(lat = 40.7128, lon = -74.0060))
-
-        // Set the mock response for the city fetch
         weatherRepository.currentWeatherResponse = mockCurrentWeatherByCity
 
-        // Call the method to fetch weather by city
+        // When
         homeViewModel.fetchWeatherByCity(cityName)
-        advanceUntilIdle() // Ensure all coroutines have completed
+        advanceUntilIdle()
 
-        // Assert
+        // Then
         val currentWeatherByCity = homeViewModel.currentWeatherByCity.getOrAwaitValue()
         assertThat(currentWeatherByCity, equalTo(mockCurrentWeatherByCity))
     }

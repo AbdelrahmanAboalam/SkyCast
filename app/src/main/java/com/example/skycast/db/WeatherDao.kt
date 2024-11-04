@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.skycast.alert.view.Alarm
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import kotlinx.coroutines.flow.Flow
@@ -56,4 +57,15 @@ interface WeatherDao {
 
     @Update( onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateCurrentWeatherResponse(currentWeatherResponse: CurrentWetherResponse)
+
+    /////////////////////
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAlarm(alarm: Alarm)
+
+    @Query("SELECT * FROM alarms")
+    suspend fun getAllAlarms(): List<Alarm>
+
+    @Delete
+   suspend fun deleteAlarm(alarm: Alarm)
+
 }
