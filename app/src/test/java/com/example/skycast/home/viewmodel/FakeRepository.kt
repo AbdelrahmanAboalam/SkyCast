@@ -2,6 +2,7 @@ package com.example.skycast.home.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.skycast.alert.view.Alarm
 import com.example.skycast.model.WeatherRepository
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
@@ -85,6 +86,18 @@ class FakeRepository: WeatherRepository {
     }
 
     override suspend fun updateCurrentWeather(current: CurrentWetherResponse) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun insertAlarm(alarm: Alarm) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllAlarms(): List<Alarm> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAlarm(alarm: Alarm) {
         TODO("Not yet implemented")
     }
 }

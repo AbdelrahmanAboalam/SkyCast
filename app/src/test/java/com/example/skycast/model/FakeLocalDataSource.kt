@@ -1,5 +1,6 @@
 package com.example.skycast.model
 
+import com.example.skycast.alert.view.Alarm
 import com.example.skycast.db.WeatherLocalDataSource
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
@@ -47,6 +48,18 @@ class FakeLocalDataSource: WeatherLocalDataSource {
     }
 
     override suspend fun updateCurrentWeather(current: CurrentWetherResponse) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun insertAlarm(alarm: Alarm) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllAlarms(): List<Alarm> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAlarm(alarm: Alarm) {
         TODO("Not yet implemented")
     }
 }
