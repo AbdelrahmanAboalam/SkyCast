@@ -1,64 +1,76 @@
 package com.example.skycast.home.viewmodel
 
-import android.annotation.SuppressLint
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skycast.model.WeatherRepository
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
+import com.example.skycast.network.FetchingState
 import com.example.skycast.setting.SettingsManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val weatherRepository: WeatherRepository,context: Context) : ViewModel() {
+class HomeViewModel(
+    private val weatherRepository: WeatherRepository,
+    context: Context
+) : ViewModel() {
 
-    private val _currentWeather = MutableLiveData<CurrentWetherResponse>()
-    val currentWeather: LiveData<CurrentWetherResponse> get() = _currentWeather
+    // StateFlows for fetching states
+    private val _currentWeatherState = MutableStateFlow<FetchingState>(FetchingState.LoadingCurrent)
+    val currentWeatherState: StateFlow<FetchingState> get() = _currentWeatherState
 
-    private val _weatherForecast = MutableLiveData<WeatherForecastResponse>()
-    val weatherForecast: LiveData<WeatherForecastResponse> get() = _weatherForecast
+    private val _weatherForecastState = MutableStateFlow<FetchingState>(FetchingState.LoadingForecast)
+    val weatherForecastState: StateFlow<FetchingState> get() = _weatherForecastState
 
-    private val _currentWeatherByCity = MutableLiveData<CurrentWetherResponse>()
-    val currentWeatherByCity: LiveData<CurrentWetherResponse> get() = _currentWeatherByCity
-
-
+    // SharedPreferences handling for language and unit
     private val sharedPreferences = SettingsManager(context)
     private val language: String = sharedPreferences.getLanguage()
     private val unit: String = sharedPreferences.getUnit()
 
-    fun fetchWeather(latitude: Double, longitude: Double) {
+    // Function to fetch current weather by coordinates
+    fun fetchCurrentWeather(latitude: Double, longitude: Double) {
+        _currentWeatherState.value = FetchingState.LoadingCurrent
         viewModelScope.launch {
-            try {
-                val currentWeatherResponse =
-                    weatherRepository.getCurrentWeather(latitude, longitude, language, unit)
-                _currentWeather.postValue(currentWeatherResponse)
-
-                val forecastResponse =
-                    weatherRepository.getWeatherForecast(latitude, longitude, language, unit)
-                _weatherForecast.postValue(forecastResponse)
-
-            } catch (e: Exception) {
-
-            }
+            weatherRepository.getCurrentWeather(latitude, longitude, language, unit)
+                .catch { e ->
+                    _currentWeatherState.value = FetchingState.ErrorCurrent("Error fetching current weather: ${e.message}")
+                }
+                .collect { currentWeatherResponse ->
+                    _currentWeatherState.value = FetchingState.SuccessCurrent(currentWeatherResponse)
+                }
         }
     }
 
-    @SuppressLint("SuspiciousIndentation")
+    // Function to fetch weather forecast by coordinates
+    fun fetchWeatherForecast(latitude: Double, longitude: Double) {
+        _weatherForecastState.value = FetchingState.LoadingForecast
+        viewModelScope.launch {
+            weatherRepository.getWeatherForecast(latitude, longitude, language, unit)
+                .catch { e ->
+                    _weatherForecastState.value = FetchingState.ErrorForecast("Error fetching weather forecast: ${e.message}")
+                }
+                .collect { forecastResponse ->
+                    _weatherForecastState.value = FetchingState.SuccessForecast(forecastResponse)
+                }
+        }
+    }
+
+    // Function to fetch current weather by city name
     fun fetchWeatherByCity(cityName: String) {
+        _currentWeatherState.value = FetchingState.LoadingCurrent
         viewModelScope.launch {
-            try {
-                val currentWeatherResponse =
-                    weatherRepository.getCurrentWeatherByCity(cityName, language, unit)
-                   _currentWeatherByCity.postValue(currentWeatherResponse)
-                fetchWeather(currentWeatherResponse.coord.lat, currentWeatherResponse.coord.lon)
-
-            } catch (e: Exception) {
-
-            }
+            weatherRepository.getCurrentWeatherByCity(cityName, language, unit)
+                .catch { e ->
+                    _currentWeatherState.value = FetchingState.ErrorCurrent("Error fetching weather by city: ${e.message}")
+                }
+                .collect { currentWeatherResponse ->
+                    _currentWeatherState.value = FetchingState.SuccessCurrent(currentWeatherResponse)
+                    // Fetch forecast using coordinates from the city response
+                    fetchWeatherForecast(currentWeatherResponse.coord.lat, currentWeatherResponse.coord.lon)
+                }
         }
     }
-
 }
-

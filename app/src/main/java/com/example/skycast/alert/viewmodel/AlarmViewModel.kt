@@ -66,10 +66,11 @@ class AlarmViewModel(
     fun fetchWeather(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             try {
-                val currentWeatherResponse = weatherRepository.getCurrentWeather(latitude, longitude, language, unit)
-                _currentWeather.postValue(currentWeatherResponse)
+                weatherRepository.getCurrentWeather(latitude, longitude, language, unit).collect { currentWeatherResponse ->
+                    _currentWeather.postValue(currentWeatherResponse)
+                }
             } catch (e: Exception) {
-                // Handle error
+                Log.e("AlarmViewModel", "Failed to fetch weather data: ${e.message}")
             }
         }
     }

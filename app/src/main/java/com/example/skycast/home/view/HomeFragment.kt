@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.skycast.LocationGetter
@@ -33,6 +34,7 @@ import com.example.skycast.model.HourlyWeatherData
 import com.example.skycast.model.WeatherRepositoryImpl
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
+import com.example.skycast.network.FetchingState
 import com.example.skycast.network.WeatherRemoteDataSourceImpl
 import com.example.skycast.setting.SettingsManager
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -105,6 +107,10 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    private fun hideLoadingIndicator() {
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -156,26 +162,31 @@ class HomeFragment : Fragment() {
         val factory = HomeViewModelFactory(weatherRepository,requireContext())
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
-        // Observe LiveData from ViewModel
-        viewModel.currentWeather.observe(viewLifecycleOwner, Observer { currentWeather ->
-            currentWeather?.let {
-                caching.cacheCurrentWeather(it)
-                updateCurrentWeather(it)
-            }
-        })
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.currentWeatherState.collect { state ->
+                when (state) {
+                    is FetchingState.SuccessCurrent -> {
+                        caching.cacheCurrentWeather(state.data)
+                        updateCurrentWeather(state.data)
+                    }
+                    else -> hideLoadingIndicator()
 
-        viewModel.weatherForecast.observe(viewLifecycleOwner, Observer { forecast ->
-            forecast?.let {
-                caching.cacheWeatherForecast(it)
-                updateForecastWeather(it)
+                }
             }
-        })
+        }
 
-        viewModel.currentWeatherByCity.observe(viewLifecycleOwner, Observer { currentWeather ->
-            currentWeather?.let {
-                updateCurrentWeather(it) // Update the UI with the current weather for the city
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.weatherForecastState.collect { state ->
+                when (state) {
+                    is FetchingState.SuccessForecast -> {
+                        caching.cacheWeatherForecast(state.data)
+                        updateForecastWeather(state.data)
+                    }
+                    else -> hideLoadingIndicator()
+                }
             }
-        })
+        }
+
 
         btnAddLocation.setOnClickListener {
             parentFragmentManager.commit {
@@ -230,7 +241,8 @@ class HomeFragment : Fragment() {
                 locationManager.getLocation() // Call the suspend function
             }
             location ?. let {
-                viewModel.fetchWeather(it.latitude, it.longitude) // Add language and units
+                viewModel.fetchWeatherForecast(it.latitude, it.longitude) // Add language and units
+                viewModel.fetchCurrentWeather(it.latitude, it.longitude)
             } ?: run {
 
             }

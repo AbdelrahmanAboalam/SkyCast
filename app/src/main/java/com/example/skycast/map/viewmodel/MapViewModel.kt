@@ -9,13 +9,14 @@ import com.example.skycast.model.WeatherRepositoryImpl
 import com.example.skycast.model.remote.WeatherForecastResponse
 import com.example.skycast.model.remote.current.CurrentWetherResponse
 import com.example.skycast.setting.SettingsManager
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import android.util.Log
 
 class MapViewModel(private val weatherRepository: WeatherRepositoryImpl, private val context: Context) : ViewModel() {
 
     private val _currentWeather = MutableLiveData<CurrentWetherResponse>()
     val currentWeather: LiveData<CurrentWetherResponse> get() = _currentWeather
-
 
     private val _weatherForecast = MutableLiveData<WeatherForecastResponse>()
     val weatherForecast: LiveData<WeatherForecastResponse> get() = _weatherForecast
@@ -27,17 +28,20 @@ class MapViewModel(private val weatherRepository: WeatherRepositoryImpl, private
     private val language: String = sharedPreferences.getLanguage() ?: "en"
     private val unit: String = sharedPreferences.getUnit()
 
-    fun fetchWeather(latitude: Double, longitude: Double ) {
+    fun fetchWeather(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             try {
-                val currentWeatherResponse = weatherRepository.getCurrentWeather(latitude, longitude , language , unit)
-                _currentWeather.postValue(currentWeatherResponse)
+                // Collect current weather flow
+                weatherRepository.getCurrentWeather(latitude, longitude, language, unit).collect { currentWeatherResponse ->
+                    _currentWeather.postValue(currentWeatherResponse)
+                }
 
-                val forecastResponse = weatherRepository.getWeatherForecast(latitude, longitude, language , unit)
-                _weatherForecast.postValue(forecastResponse)
-
+                // Collect forecast weather flow
+                weatherRepository.getWeatherForecast(latitude, longitude, language, unit).collect { forecastResponse ->
+                    _weatherForecast.postValue(forecastResponse)
+                }
             } catch (e: Exception) {
-
+                Log.e("MapViewModel", "Error fetching weather data: ${e.message}")
             }
         }
     }

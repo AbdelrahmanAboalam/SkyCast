@@ -131,13 +131,13 @@ class AlarmService : Service() {
                 val language = sharedPreferences.getLanguage() ?: "en"
                 val unit = sharedPreferences.getUnit()
 
-                val currentWeatherResponse: CurrentWetherResponse = weatherRepository.getCurrentWeather(latitude, longitude, language, unit)
-
-                launch(Dispatchers.Main) {
+                weatherRepository.getCurrentWeather(latitude, longitude, language, unit).collect { currentWeatherResponse ->
                     val currentTemp = currentWeatherResponse.main.temp // Adjust according to your API response
-                    Toast.makeText(applicationContext, "Current Temperature: $currentTemp °C", Toast.LENGTH_SHORT).show()
 
-                    setupNotification(alarmName, currentTemp)
+                    launch(Dispatchers.Main) {
+                        Toast.makeText(applicationContext, "Current Temperature: $currentTemp °C", Toast.LENGTH_SHORT).show()
+                        setupNotification(alarmName, currentTemp)
+                    }
                 }
             } catch (e: Exception) {
                 launch(Dispatchers.Main) {

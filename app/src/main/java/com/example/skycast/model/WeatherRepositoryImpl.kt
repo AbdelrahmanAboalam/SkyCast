@@ -8,6 +8,7 @@ import com.example.skycast.network.WeatherRemoteDataSource
 import com.example.skycast.network.WeatherRemoteDataSourceImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 class WeatherRepositoryImpl(
@@ -21,10 +22,10 @@ class WeatherRepositoryImpl(
         lon: Double,
         lang: String,
         units: String
-    ): WeatherForecastResponse = withContext(Dispatchers.IO){
+    ): Flow<WeatherForecastResponse> = flow{
         val response = remoteDataSource.getWeatherForecast(lat, lon, lang, units)
         if (response.isSuccessful){
-            response.body() ?: throw Exception("No weather forecast data available")
+            emit(response.body() ?: WeatherForecastResponse())
         }else{
             throw Exception("Failed to fetch weather forecast")
         }
@@ -36,10 +37,10 @@ class WeatherRepositoryImpl(
         lon: Double,
         lang: String,
         units: String
-    ): CurrentWetherResponse = withContext(Dispatchers.IO) {
+    ): Flow<CurrentWetherResponse> = flow {
         val response = remoteDataSource.getCurrentWeather(lat, lon, lang, units)
         if (response.isSuccessful){
-            response.body() ?: throw Exception("No current weather data available")
+            emit( response.body() ?: CurrentWetherResponse())
         }else{
             throw Exception("Failed to fetch current weather ${response.message()}")
         }
@@ -49,10 +50,10 @@ class WeatherRepositoryImpl(
         cityName: String,
         lang: String,
         units: String
-    ): CurrentWetherResponse = withContext(Dispatchers.IO) {
+    ): Flow<CurrentWetherResponse> = flow{
         val response = remoteDataSource.getCurrentWeatherByCity(cityName, lang, units)
         if (response.isSuccessful){
-            response.body() ?: throw Exception("No current weather data available")
+            emit( response.body() ?: CurrentWetherResponse())
         }else{
             throw Exception("Failed to fetch current weather ${response.message()}")
         }

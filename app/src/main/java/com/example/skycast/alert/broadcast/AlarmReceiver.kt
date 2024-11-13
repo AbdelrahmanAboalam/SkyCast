@@ -17,13 +17,13 @@ class AlarmReceiver : BroadcastReceiver() {
         val hour = intent.getIntExtra("hour", 0)  // Retrieve the hour
         val minute = intent.getIntExtra("minute", 0)  // Retrieve the minute
 
-        startAlarmService(context, alarmName, latitude, longitude, hour, minute) // Pass hour and minute
+        startAlarmService(context,alarmId, alarmName, latitude, longitude, hour, minute) // Pass hour and minute
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun startAlarmService(context: Context, alarmName: String, latitude: Double, longitude: Double, hour: Int, minute: Int) {
+    private fun startAlarmService(context: Context,alarmId: Int, alarmName: String, latitude: Double, longitude: Double, hour: Int, minute: Int) {
         val serviceIntent = Intent(context, AlarmService::class.java).apply {
-            putExtra("alarmId", 1)
+            putExtra("alarmId", alarmId)
             putExtra("alarmName", alarmName)
             putExtra("latitude", latitude)
             putExtra("longitude", longitude)

@@ -40,24 +40,30 @@ class SettingViewModel(private val repository: WeatherRepository, private val co
 
     private suspend fun fetchAndUpdateSetting(settingData: CurrentWetherResponse) {
         if (isNetworkAvailable(context)) {
-            val settingResponse = repository.getCurrentWeather(
+            // Collecting current weather data
+            repository.getCurrentWeather(
                 settingData.coord.lat,
                 settingData.coord.lon,
                 sharedPreferences.getLanguage(),
                 sharedPreferences.getUnit()
-            )
-            settingResponse.idKey = settingData.idKey
-            repository.updateCurrentWeather(settingResponse)
-            val forecastResponse = repository.getWeatherForecast(
+            ).collect { settingResponse ->
+                settingResponse.idKey = settingData.idKey
+                repository.updateCurrentWeather(settingResponse)
+            }
+
+            // Collecting forecast weather data
+            repository.getWeatherForecast(
                 settingData.coord.lat,
                 settingData.coord.lon,
                 sharedPreferences.getLanguage(),
                 sharedPreferences.getUnit()
-            )
-            forecastResponse.idKey = settingData.idKey
-            repository.updateWeather(forecastResponse)
+            ).collect { forecastResponse ->
+                forecastResponse.idKey = settingData.idKey
+                repository.updateWeather(forecastResponse)
+            }
         }
     }
+
 
     // Function to check network availability
     private fun isNetworkAvailable(context: Context): Boolean {
